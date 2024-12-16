@@ -74,4 +74,14 @@ io.on('connection', (socket) => {
     socket.on('count', (ct) => {
         console.log(`count: ${ct}`);
     });
+
+    socket.on('deckChange', (card, player) => {
+      console.log("nextCard server");
+      let newPlayer = 1; 
+
+      if (player < 4) {
+        newPlayer = player + 1; 
+      }
+      io.emit('nextPlayer', card, newPlayer);
+    })
 });

@@ -39,6 +39,14 @@ function App() {
       setNumSelectedCards(0); 
     })
 
+    socket.on('nextPlayer', (newCard, newPlayer) => {
+      console.log("nextCard socket");
+      console.log(newCard); 
+      console.log(newPlayer)
+      setCurrentCard(newCard); 
+      changePlayer(newPlayer); 
+    }); 
+
     function onConnect() {
       setIsConnected(true);
     }
@@ -66,14 +74,11 @@ function App() {
 
   function selectCard(i) {
     let selectedCard = cards[i];
+    console.log(selectedCard);
     if (currentPlayer == playerNumber) {
-      console.log(selectedCard);
       setCurrentCard(selectedCard);
-      if (currentPlayer >= 4) {
-        changePlayer(1); 
-      } else {
-        changePlayer(currentPlayer + 1);
-      }
+      socket.emit('deckChange', selectedCard, playerNumber); 
+
     } else {
       console.log("NOT UR TURN")
     }
