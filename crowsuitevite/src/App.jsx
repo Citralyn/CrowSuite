@@ -22,6 +22,7 @@ function App() {
     socket.on('connect', onConnect);
 
     socket.on('updatePlayerNumber', (num) => {
+      console.log(num); 
       setPlayerNumber(num); 
     })
 
@@ -50,10 +51,12 @@ function App() {
     }
 
     setSuit(cards[count].suit); 
+    //setSuit(2);
     socket.emit('count', count); 
   }
 
   function newCard() {
+    console.log("Y");
 
     //setCurrentCard(cards[count]); 
     //console.log(cards[count].value)
@@ -66,12 +69,14 @@ function App() {
         <img src={crowLogo} className="logo" />
       </div>
       <h1>CrowSuite</h1>
+      <h2> {playerNumber} </h2>
       <div className="card">
-        <Suit suite_index={suit}/> 
+        <Suit suit_index={suit}/> 
         <button onClick={() => {newCard()}}>
         Change Card</button>
         <button onClick={() => {handleCount()}}>
           count is {count}
+          suit is {suit}
         </button>
         <p>
           For Big2 and Bird Enthusiasts!
