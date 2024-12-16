@@ -14,6 +14,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [currentPlayer, changePlayer] = useState(1); 
   const [currentCard, setCurrentCard] = useState(cards[0]);
+  const [holdingCard, setHoldingCard] = useState(cards[0]);
   const [value, setValue] = useState(0);
   const [number, setNumber] = useState(0);
   const [suit, setSuit] = useState(0);
@@ -75,12 +76,23 @@ function App() {
   function selectCard(i) {
     let selectedCard = cards[i];
     console.log(selectedCard);
-    if (currentPlayer == playerNumber) {
-      setCurrentCard(selectedCard);
-      socket.emit('deckChange', selectedCard, playerNumber); 
+    setHoldingCard(selectedCard); 
+  }
 
+  function play() {
+    if (currentPlayer == playerNumber) {
+      setCurrentCard(holdingCard);
+      socket.emit('deckChange', holdingCard, playerNumber); 
     } else {
-      console.log("NOT UR TURN")
+      console.log("NOT UR TURN");
+    }
+  }
+
+  function pass() {
+    if (currentPlayer == playerNumber) {
+      socket.emit('deckChange', currentCard, playerNumber); 
+    } else {
+      console.log("NOT UR TURN");
     }
   }
 
@@ -103,13 +115,12 @@ function App() {
           <Card cardFunc={selectCard} index={3} card_to_display={getCard(3)}></Card>
         </div>
         <p> Selected Cards: </p>
-        <SelectedCards card_to_display={currentCard}></SelectedCards>
-        <div className="card">
-          <button onClick={() => {handleCount()}}>
-            count is {count}
-          </button>
-
+        <SelectedCards card_to_display={holdingCard}></SelectedCards>
+        <div className="play_or_pass">
+          <button onClick={() => {play()}}> PLAY </button>
+          <button onClick={() => {pass()}}> PASS </button>
         </div>
+
         <p className="read-the-docs">
           Made with Socket.io and Vite
         </p>
