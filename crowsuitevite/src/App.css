@@ -2,9 +2,17 @@
   align-items: center;
   justify-content: center;
   display: flex;
-  margin-top: -20%;
+  border-radius: 2%;
   color: black;
-  background-color: lightsalmon;
+  background-color: lightgrey;
+  border: 2px black solid;
+}
+
+.play_or_pass {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  gap: 5%;
 }
 
 #root {

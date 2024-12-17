@@ -75,13 +75,13 @@ io.on('connection', (socket) => {
         console.log(`count: ${ct}`);
     });
 
-    socket.on('deckChange', (card, player) => {
+    socket.on('deckChange', (playedCards, player) => {
       console.log("nextCard server");
       let newPlayer = 1; 
 
       if (player < 4) {
         newPlayer = player + 1; 
       }
-      io.emit('nextPlayer', card, newPlayer);
+      io.emit('nextPlayer', playedCards, newPlayer);
     })
 });

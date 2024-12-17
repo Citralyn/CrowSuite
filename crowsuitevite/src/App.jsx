@@ -13,8 +13,8 @@ function App() {
   const [playerNumber, setPlayerNumber] = useState(0);
   const [cards, setCards] = useState([]);
   const [currentPlayer, changePlayer] = useState(1); 
-  const [currentCard, setCurrentCard] = useState(cards[0]);
-  const [holdingCard, setHoldingCard] = useState(cards[0]);
+  const [currentCard, setCurrentCard] = useState([]);
+  const [holdingCard, setHoldingCard] = useState([]);
   const [value, setValue] = useState(0);
   const [number, setNumber] = useState(0);
   const [suit, setSuit] = useState(0);
@@ -40,12 +40,13 @@ function App() {
       setNumSelectedCards(0); 
     })
 
-    socket.on('nextPlayer', (newCard, newPlayer) => {
+    socket.on('nextPlayer', (newCards, newPlayer) => {
       console.log("nextCard socket");
-      console.log(newCard); 
       console.log(newPlayer)
-      setCurrentCard(newCard); 
+      setCurrentCard(newCards); 
       changePlayer(newPlayer); 
+      setHoldingCard([]); 
+      setNumSelectedCards(0); 
     }); 
 
     function onConnect() {
@@ -74,17 +75,24 @@ function App() {
   }
 
   function selectCard(i) {
-    let selectedCard = cards[i];
-    console.log(selectedCard);
-    setHoldingCard(selectedCard); 
+    let selectedCards = holdingCard; 
+    selectedCards.push(cards[i]); 
+    if (NumSelectedCards < 5) {
+      setHoldingCard(selectedCards); 
+      setNumSelectedCards(NumSelectedCards + 1); 
+    }
   }
 
   function play() {
     if (currentPlayer == playerNumber) {
-      setCurrentCard(holdingCard);
-      socket.emit('deckChange', holdingCard, playerNumber); 
+      if (NumSelectedCards == 0) {
+        alert("Select Cards or Pass"); 
+      } else {
+        setCurrentCard(holdingCard);
+        socket.emit('deckChange', holdingCard, playerNumber); 
+      }
     } else {
-      console.log("NOT UR TURN");
+      alert("NOT YOUR TURN"); 
     }
   }
 
@@ -92,7 +100,7 @@ function App() {
     if (currentPlayer == playerNumber) {
       socket.emit('deckChange', currentCard, playerNumber); 
     } else {
-      console.log("NOT UR TURN");
+      alert("NOT YOUR TURN"); 
     }
   }
 
@@ -103,19 +111,40 @@ function App() {
           <h1>CrowSuite</h1>
           <img src={crowLogo} className="logo" />
         </div>
-        <p>For Big2 and Bird Enthusiasts!</p>
-        <p>Player {currentPlayer}'s Turn</p>
+        <p className="read-the-docs">For Big2 and Bird Enthusiasts!</p>
+        <h2>Player {currentPlayer}'s Turn</h2>
         <p> Deck: </p>
-        <Deck card_to_display={currentCard}></Deck>
-        <p> You are Player {playerNumber}. Here are your cards. </p>
+        <div className = "playerCards">
+          <Deck card_to_display={currentCard[0]}></Deck>
+          <Deck card_to_display={currentCard[1]}></Deck>
+          <Deck card_to_display={currentCard[2]}></Deck>
+          <Deck card_to_display={currentCard[3]}></Deck>
+          <Deck card_to_display={currentCard[4]}></Deck>
+        </div>
+        <p> You are Player {playerNumber}. Here are your cards: </p>
         <div className = "playerCards">
           <Card cardFunc={selectCard} index={0} card_to_display={getCard(0)}></Card>
           <Card cardFunc={selectCard} index={1} card_to_display={getCard(1)}></Card>
           <Card cardFunc={selectCard} index={2} card_to_display={getCard(2)}></Card>
           <Card cardFunc={selectCard} index={3} card_to_display={getCard(3)}></Card>
+          <Card cardFunc={selectCard} index={4} card_to_display={getCard(4)}></Card>
+          <Card cardFunc={selectCard} index={5} card_to_display={getCard(5)}></Card>
+          <Card cardFunc={selectCard} index={6} card_to_display={getCard(6)}></Card>
+          <Card cardFunc={selectCard} index={7} card_to_display={getCard(7)}></Card>
+          <Card cardFunc={selectCard} index={8} card_to_display={getCard(8)}></Card>
+          <Card cardFunc={selectCard} index={9} card_to_display={getCard(9)}></Card>
+          <Card cardFunc={selectCard} index={10} card_to_display={getCard(10)}></Card>
+          <Card cardFunc={selectCard} index={11} card_to_display={getCard(11)}></Card>
+          <Card cardFunc={selectCard} index={12} card_to_display={getCard(12)}></Card>
         </div>
         <p> Selected Cards: </p>
-        <SelectedCards card_to_display={holdingCard}></SelectedCards>
+        <div className = "playerCards">
+          <SelectedCards card_to_display={holdingCard[0]}></SelectedCards>
+          <SelectedCards card_to_display={holdingCard[1]}></SelectedCards>
+          <SelectedCards card_to_display={holdingCard[2]}></SelectedCards>
+          <SelectedCards card_to_display={holdingCard[3]}></SelectedCards>
+          <SelectedCards card_to_display={holdingCard[4]}></SelectedCards>
+        </div>
         <div className="play_or_pass">
           <button onClick={() => {play()}}> PLAY </button>
           <button onClick={() => {pass()}}> PASS </button>
