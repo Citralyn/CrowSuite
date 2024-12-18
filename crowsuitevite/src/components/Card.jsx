@@ -12,14 +12,13 @@ const image_urls = {
   "crow": crowLogo
 }
 
-export default function Card({cardFunc, index, card_to_display}) {
+export default function Card({cardFunc, index, card_to_display, usedCards}) {
   console.log(card_to_display)
 
   function handleClick(i) {
     cardFunc(i);
   }
 
-  
   if (card_to_display == undefined) {
     return;
   } else {
@@ -28,14 +27,30 @@ export default function Card({cardFunc, index, card_to_display}) {
     let suit = card_to_display.suit;
     console.log(`${value}, ${number}, ${suit}`)
 
-    return (
-      <div className="playerCard" onClick={() => {handleClick(index)}}>
-        <h1>{number} of {suit}s</h1>
-        <img
-        src={image_urls[suit]}
-      />
-      </div>
-    );
+    if (usedCards) {
+      console.log(`USED -> ${usedCards}`); 
+      if (usedCards.includes(index)) {
+        return;
+      } else {
+        return (
+          <div className="playerCard" onClick={() => {handleClick(index)}}>
+            <h1>{number} of {suit}s</h1>
+            <img
+            src={image_urls[suit]}
+          />
+          </div>
+        );
+      }
+    } else {
+      return (
+        <div className="playerCard" onClick={() => {handleClick(index)}}>
+          <h1>{number} of {suit}s</h1>
+          <img
+          src={image_urls[suit]}
+        />
+        </div>
+      );
+    }; 
   }
 
 }; 

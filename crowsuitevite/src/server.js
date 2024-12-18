@@ -93,4 +93,12 @@ io.on('connection', (socket) => {
     socket.on('increasePasses', () => {
       io.emit('increasePassByOne'); 
     }); 
+
+    socket.on('resetPasses', () => {
+      io.emit('setPassToZero'); 
+    })
+
+    socket.on('game_complete', (winner) => {
+      io.emit("show_results", winner);
+    }); 
 });
