@@ -15,11 +15,10 @@ function App() {
   const [currentPlayer, changePlayer] = useState(1); 
   const [currentCard, setCurrentCard] = useState([]);
   const [holdingCard, setHoldingCard] = useState([]);
-  const [value, setValue] = useState(0);
-  const [number, setNumber] = useState(0);
-  const [suit, setSuit] = useState(0);
+  const [individualCardCount, setIndividualCardCount] = useState(13); 
+  const [numOfPasses, updatePassNum] = useState(0); 
   const [cardCount, setCardCount] = useState(0);
-  const [NumSelectedCards, setNumSelectedCards] = useState(0);
+  const [numSelectedCards, setNumSelectedCards] = useState(0);
 
   // for testing purposes
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -36,8 +35,6 @@ function App() {
     socket.on('deal_cards', (cards) => {
       console.log("DEALT.")
       setCards(cards); 
-      setCardCount(13); 
-      setNumSelectedCards(0); 
     })
 
     socket.on('nextPlayer', (newCards, newPlayer) => {
@@ -47,7 +44,21 @@ function App() {
       changePlayer(newPlayer); 
       setHoldingCard([]); 
       setNumSelectedCards(0); 
+      if (numOfPasses >= 3) {
+        setCardCount(0); 
+        updatePassNum(0); 
+      }
     }); 
+
+    socket.on('setCardAmount', (newCardAmount) => {
+      console.log(`GIVEN COUNT -> ${newCardAmount}`)
+      setCardCount(newCardAmount); 
+      console.log(`CARD COUNT -> ${cardCount}`)
+    })
+
+    socket.on('increasePassesByOne', () => {
+      updatePassNum(numOfPasses + 1); 
+    })
 
     function onConnect() {
       setIsConnected(true);
@@ -77,19 +88,29 @@ function App() {
   function selectCard(i) {
     let selectedCards = holdingCard; 
     selectedCards.push(cards[i]); 
-    if (NumSelectedCards < 5) {
+    if (numSelectedCards < 5) {
       setHoldingCard(selectedCards); 
-      setNumSelectedCards(NumSelectedCards + 1); 
+      setNumSelectedCards(numSelectedCards + 1); 
     }
   }
 
   function play() {
     if (currentPlayer == playerNumber) {
-      if (NumSelectedCards == 0) {
+      if (numSelectedCards == 0) {
         alert("Select Cards or Pass"); 
       } else {
-        setCurrentCard(holdingCard);
-        socket.emit('deckChange', holdingCard, playerNumber); 
+        if (cardCount == 0 || numSelectedCards == cardCount) {
+          console.log(`COUNT ${cardCount}`); 
+          if (cardCount == 0) {
+            setCardCount(numSelectedCards); 
+            socket.emit('startOfRound', numSelectedCards); 
+          }
+          setCurrentCard(holdingCard);
+          socket.emit('deckChange', holdingCard, playerNumber); 
+
+        } else {
+          alert(`You need ${cardCount} number of cards.`);
+        }
       }
     } else {
       alert("NOT YOUR TURN"); 
@@ -98,7 +119,13 @@ function App() {
 
   function pass() {
     if (currentPlayer == playerNumber) {
-      socket.emit('deckChange', currentCard, playerNumber); 
+      if (cardCount != 0) {
+        socket.emit('deckChange', currentCard, playerNumber); 
+        socket.emit('increasePasses'); 
+      } else {
+        alert("It is your turn to start the round"); 
+      }
+      
     } else {
       alert("NOT YOUR TURN"); 
     }

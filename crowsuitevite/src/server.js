@@ -9,7 +9,7 @@ const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:5173', // Replace with your React app's URL
+      origin: "http://localhost:5173", 
       methods: ['GET', 'POST'],
     },
 });
@@ -83,5 +83,14 @@ io.on('connection', (socket) => {
         newPlayer = player + 1; 
       }
       io.emit('nextPlayer', playedCards, newPlayer);
-    })
+    });
+
+    socket.on('startOfRound', (newAmount) => {
+      console.log(`new start: ${newAmount}`); 
+      io.emit('setCardAmount', newAmount);
+    }); 
+
+    socket.on('increasePasses', () => {
+      io.emit('increasePassByOne'); 
+    }); 
 });
