@@ -35,6 +35,7 @@ function App() {
 
     socket.on('deal_cards', (cards) => {
       console.log("DEALT.")
+      cards.sort((a, b) => a.value - b.value); 
       setCards(cards); 
     })
 
@@ -86,14 +87,21 @@ function App() {
     });
 
     socket.on('confirmMove', (numCardsPlayed) => {
+      console.log("AFTER CONFIRMATION");
+
       if (cardCount == 0) {
         socket.emit('startOfRound', numCardsPlayed); 
       }
+
       let updatedUsedCards = usedCardIndexes;
+      
       updatedUsedCards.push(...holdingCardIndexes);
+      console.log(`updatedUsed -> ${updatedUsedCards.length}`);
       addToUsed(updatedUsedCards);
 
       let newIndividualCount = individualCardCount - numCardsPlayed;
+
+      console.log(`num -> ${numCardsPlayed}`)
 
       if (newIndividualCount == 0) {
         socket.emit('game_complete', currentPlayer); 
@@ -131,16 +139,24 @@ function App() {
   }
 
   function selectCard(i) {
-    let selectedCards = holdingCards; 
-    selectedCards.push(cards[i]); 
-    let currentIndexes = holdingCardIndexes; 
-    currentIndexes.push(i); 
-    setIndexes[currentIndexes]; 
 
-    if (numSelectedCards < 5) {
-      setHoldingCards(selectedCards); 
-      setNumSelectedCards(numSelectedCards + 1); 
+    if (!holdingCardIndexes.includes(i)) {
+      let selectedCards = holdingCards; 
+      selectedCards.push(cards[i]); 
+      let currentIndexes = holdingCardIndexes; 
+      currentIndexes.push(i); 
+      setIndexes[currentIndexes]; 
+  
+      if (numSelectedCards < 5) {
+        setHoldingCards(selectedCards); 
+        setNumSelectedCards(numSelectedCards + 1); 
+      }
     }
+
+  }
+
+  function deselectCard(i) {
+
   }
 
   function play() {
@@ -187,6 +203,7 @@ function App() {
           <img src={crowLogo} className="logo" />
         </div>
         <p className="read-the-docs">For Big2 and Bird Enthusiasts!</p>
+        <hr></hr>
         <h2>Player {currentPlayer}'s Turn</h2>
         <p> Deck: </p>
         <div className = "playerCards">
@@ -214,19 +231,29 @@ function App() {
         </div>
         <p> Selected Cards: </p>
         <div className = "playerCards">
-          <SelectedCards card_to_display={holdingCards[0]}></SelectedCards>
-          <SelectedCards card_to_display={holdingCards[1]}></SelectedCards>
-          <SelectedCards card_to_display={holdingCards[2]}></SelectedCards>
-          <SelectedCards card_to_display={holdingCards[3]}></SelectedCards>
-          <SelectedCards card_to_display={holdingCards[4]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={0} card_to_display={holdingCards[0]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={1} card_to_display={holdingCards[1]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={2} card_to_display={holdingCards[2]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={3} card_to_display={holdingCards[3]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={4} card_to_display={holdingCards[4]}></SelectedCards>
         </div>
+        <hr></hr>
         <div className="play_or_pass">
           <button onClick={() => {play()}}> PLAY </button>
           <button onClick={() => {pass()}}> PASS </button>
         </div>
 
+        <hr></hr>
+
         <p className="read-the-docs">
-          Made with Socket.io and Vite
+          React for UI</p>
+        <p className="read-the-docs">
+          Express and Node HTTP for server & routing 
+          </p>
+        <p className="read-the-docs">
+          Socket.io for real-time communication</p>
+        <p className="read-the-docs">
+          Vite for bundling and development
         </p>
       </>
     )

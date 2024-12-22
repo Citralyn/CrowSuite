@@ -81,7 +81,7 @@ function getPlayType(playerCards, numCards) {
       playerCards.sort((a, b) => (a.value - b.value));
   
       //check for straight
-      if (playerCards[0].number == playerCards[0].number - 1) {
+      if (playerCards[0].number == playerCards[1].number - 1) {
         if (playerCards[1].number == playerCards[2].number - 1) {
           if (playerCards[2].number == playerCards[3].number - 1) {
             if (playerCards[3].number == playerCards[4].number - 1) {
@@ -325,26 +325,46 @@ io.on('connection', (socket) => {
     socket.on("checkValidMove", (playerNum, playerCards, deckCards, numCards) => {
       let playType = getPlayType(playerCards, numCards); 
 
+      console.log(`meow ${deckCards.length}`);
+
       if (playType == -1) {
         socket.emit('invalidMove'); 
       } else {
-        if (higherThanDeck(playerCards, deckCards, numCards)) {
+        if (deckCards.length == 0) {
+
           let newPlayer = 1; 
 
           if (playerNum < 4) {
             newPlayer = playerNum + 1; 
           }
 
-          socket.emit('comfirmMove', numCards); 
+          console.log("BEFORE_CONFIRMATION");
+          socket.emit('confirmMove', numCards); 
 
           io.emit('nextPlayer', playerCards, newPlayer);
 
           amountOfPasses = 0; 
           io.emit('setPassToZero'); 
+
+        } else if (higherThanDeck(playerCards, deckCards, numCards)) {
+
+          let newPlayer = 1; 
+
+          if (playerNum < 4) {
+            newPlayer = playerNum + 1; 
+          }
+
+          socket.emit('confirmMove', numCards); 
+
+          io.emit('nextPlayer', playerCards, newPlayer);
+
+          amountOfPasses = 0; 
+          io.emit('setPassToZero'); 
+
         } else {
           socket.emit('tooLow');
         }
       } 
     });
-    
+
 });

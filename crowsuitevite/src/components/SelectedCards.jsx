@@ -12,8 +12,13 @@ const image_urls = {
   "crow": crowLogo
 }
 
-export default function SelectedCards({card_to_display}) {
+export default function SelectedCards({cardFunc, index, card_to_display}) {
     console.log({card_to_display})
+
+    function handleClick(i) {
+      cardFunc(i);
+    }
+
     if (card_to_display == undefined) {
         return;
       } else {
@@ -23,7 +28,7 @@ export default function SelectedCards({card_to_display}) {
         console.log(`${value}, ${number}, ${suit}`)
     
         return (
-          <div className="playerCard">
+          <div className="playerCard" onClick={() => {handleClick(index)}}>
             <h1>{number} of {suit}s</h1>
             <img
             src={image_urls[suit]}
