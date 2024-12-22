@@ -25,7 +25,7 @@ export default function Card({cardFunc, index, card_to_display, usedCards}) {
     let value = card_to_display.value; 
     let number = card_to_display.number;
     let suit = card_to_display.suit;
-    console.log(`${value}, ${number}, ${suit}`)
+    //console.log(`${value}, ${number}, ${suit}`)
 
     if (usedCards) {
       console.log(`USED -> ${usedCards}`); 

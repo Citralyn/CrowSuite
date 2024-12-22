@@ -41,20 +41,18 @@ function App() {
     socket.on('nextPlayer', (newCards, newPlayer) => {
       console.log("nextCard socket");
       console.log(newPlayer)
+      console.log(`PASS -> ${numOfPasses}`); 
       setCurrentCard(newCards); 
       changePlayer(newPlayer); 
       setHoldingCards([]); 
       setIndexes([]);
       setNumSelectedCards(0); 
-      if (numOfPasses >= 3) {
-        setCardCount(0); 
-        updatePassNum(0); 
-      }
-
-      if (individualCardCount == 0) {
-        socket.emit('game_complete', currentPlayer); 
-      }
     }); 
+
+    socket.on('newRound', () => {
+      setCardCount(0); 
+      updatePassNum(0); 
+    })
 
     socket.on('show_results', (winner) => {
       if (winner == currentPlayer) {
@@ -70,12 +68,40 @@ function App() {
       console.log(`CARD COUNT -> ${cardCount}`)
     })
 
-    socket.on('increasePassesByOne', () => {
+    socket.on('updatePass', (amount) => {
       updatePassNum(numOfPasses + 1); 
+      console.log(`socket pass amount -> ${numOfPasses}`)
     })
 
     socket.on('setPassToZero', () => {
       updatePassNum(0); 
+    })
+
+    socket.on('tooLow', () => {
+      alert("Not high enough.");
+    })
+
+    socket.on('invalidMove', () => {
+      alert("Invalid combination.");
+    });
+
+    socket.on('confirmMove', (numCardsPlayed) => {
+      if (cardCount == 0) {
+        socket.emit('startOfRound', numCardsPlayed); 
+      }
+      let updatedUsedCards = usedCardIndexes;
+      updatedUsedCards.push(...holdingCardIndexes);
+      addToUsed(updatedUsedCards);
+
+      let newIndividualCount = individualCardCount - numCardsPlayed;
+
+      if (newIndividualCount == 0) {
+        socket.emit('game_complete', currentPlayer); 
+      }
+      setIndividualCardCount(newIndividualCount); 
+
+      setCurrentCard(holdingCards);
+
     })
 
     function onConnect() {
@@ -89,6 +115,7 @@ function App() {
 
   // for events/functions that react to the DOM
   function handleCount() {
+    //example - for testing purposes
     if (count >= 12) {
       setCount(0); 
     } else {
@@ -120,21 +147,13 @@ function App() {
     if (currentPlayer == playerNumber) {
       if (numSelectedCards == 0) {
         alert("Select Cards or Pass"); 
+      } else if (numSelectedCards == 4) {
+        alert("Select 1, 2, 3, or 5 Cards."); 
       } else {
         if (cardCount == 0 || numSelectedCards == cardCount) {
           console.log(`COUNT ${cardCount}`); 
-          if (cardCount == 0) {
-            setCardCount(numSelectedCards); 
-            socket.emit('startOfRound', numSelectedCards); 
-          }
-          let updatedUsedCards = usedCardIndexes;
-          updatedUsedCards.push(...holdingCardIndexes);
-          addToUsed(updatedUsedCards);
-          setIndividualCardCount(individualCardCount - numSelectedCards); 
-
-          setCurrentCard(holdingCards);
-          socket.emit('deckChange', holdingCards, playerNumber); 
-          socket.emit('resetPasses'); 
+ 
+          socket.emit('checkValidMove', playerNumber, holdingCards, currentCard, numSelectedCards); 
 
         } else {
           alert(`You need ${cardCount} number of cards.`);
@@ -148,8 +167,9 @@ function App() {
   function pass() {
     if (currentPlayer == playerNumber) {
       if (cardCount != 0) {
-        socket.emit('deckChange', currentCard, playerNumber); 
+        console.log("increasing passes? -> socket"); 
         socket.emit('increasePasses'); 
+        socket.emit('deckChange', currentCard, playerNumber); 
       } else {
         alert("It is your turn to start the round"); 
       }
