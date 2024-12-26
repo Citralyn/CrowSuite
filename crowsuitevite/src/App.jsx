@@ -12,10 +12,37 @@ function App() {
   const [playerNumber, setPlayerNumber] = useState(0);
   const [cards, setCards] = useState([]);
   const [currentPlayer, changePlayer] = useState(1); 
-  const [currentCard, setCurrentCard] = useState([]);
-  const [holdingCards, setHoldingCards] = useState([]);
-  const [holdingCardIndexes, setIndexes] = useState([]);
-  const [usedCardIndexes, addToUsed] = useState([]);
+  const [cardsInDeck, setDeckCards] = useState([]);
+  const [heldCards, setHeldCards] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
+    10: false,
+    11: false,
+    12: false
+  });
+  const [usedCards, addToUsed] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
+    10: false,
+    11: false,
+    12: false
+  });
   const [individualCardCount, setIndividualCardCount] = useState(13); 
   const [numOfPasses, updatePassNum] = useState(0); 
   const [cardCount, setCardCount] = useState(0);
@@ -40,23 +67,44 @@ function App() {
     })
 
     socket.on('nextPlayer', (newCards, newPlayer) => {
+      alert(`CURR: ${newPlayer}, YOU: ${playerNumber}`); 
       console.log("nextCard socket");
       console.log(newPlayer)
       console.log(`PASS -> ${numOfPasses}`); 
-      setCurrentCard(newCards); 
+      setDeckCards(newCards); 
       changePlayer(newPlayer); 
-      setHoldingCards([]); 
-      setIndexes([]);
+      setHeldCards({
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false,
+        6: false,
+        7: false,
+        8: false,
+        9: false,
+        10: false,
+        11: false,
+        12: false
+      })
       setNumSelectedCards(0); 
     }); 
 
     socket.on('newRound', () => {
+      setDeckCards([]);
       setCardCount(0); 
       updatePassNum(0); 
+      alert(`CURR: ${currentPlayer}, YOU: ${playerNumber}`); 
+      if (currentPlayer == playerNumber) {
+        alert("Your turn to start");
+      } else {
+        alert(`${currentPlayer}'s turn to start`)
+      }
     })
 
     socket.on('show_results', (winner) => {
-      if (winner == currentPlayer) {
+      if (winner == playerNumber) {
         alert("YOU WON!");
       } else {
         alert(`PLAYER ${winner} WON!`);
@@ -69,7 +117,7 @@ function App() {
       console.log(`CARD COUNT -> ${cardCount}`)
     })
 
-    socket.on('updatePass', (amount) => {
+    socket.on('updatePass', () => {
       updatePassNum(numOfPasses + 1); 
       console.log(`socket pass amount -> ${numOfPasses}`)
     })
@@ -86,29 +134,48 @@ function App() {
       alert("Invalid combination.");
     });
 
-    socket.on('confirmMove', (numCardsPlayed) => {
+    socket.on('confirmMove', (cardsInHand, numCardsPlayed) => {
       console.log("AFTER CONFIRMATION");
 
       if (cardCount == 0) {
         socket.emit('startOfRound', numCardsPlayed); 
       }
 
-      let updatedUsedCards = usedCardIndexes;
+      let updatedUsedCards = usedCards; 
+
       
-      updatedUsedCards.push(...holdingCardIndexes);
-      console.log(`updatedUsed -> ${updatedUsedCards.length}`);
+
+      for (let i = 0; i < 13; i++) {
+        console.log(cardsInHand[i])
+      }
+
+
+      for (let i = 0; i < 13; i++) {
+        if (cardsInHand[i] == true) {
+          console.log(`in confirmation, holding ${i}`)
+          updatedUsedCards[i] = true; 
+        }
+      }
+
       addToUsed(updatedUsedCards);
 
       let newIndividualCount = individualCardCount - numCardsPlayed;
 
-      console.log(`num -> ${numCardsPlayed}`)
-
       if (newIndividualCount == 0) {
         socket.emit('game_complete', currentPlayer); 
       }
-      setIndividualCardCount(newIndividualCount); 
 
-      setCurrentCard(holdingCards);
+      setIndividualCardCount(newIndividualCount); 
+      let currentDeck = [];
+
+      for (let i = 0; i < 13; i++) {
+        if (cardsInHand[i] == true) {
+          currentDeck.push(cards[i]);
+        }
+      }
+      
+      setDeckCards(currentDeck); 
+      console.log(`done confirmation`);
 
     })
 
@@ -140,15 +207,12 @@ function App() {
 
   function selectCard(i) {
 
-    if (!holdingCardIndexes.includes(i)) {
-      let selectedCards = holdingCards; 
-      selectedCards.push(cards[i]); 
-      let currentIndexes = holdingCardIndexes; 
-      currentIndexes.push(i); 
-      setIndexes[currentIndexes]; 
-  
-      if (numSelectedCards < 5) {
-        setHoldingCards(selectedCards); 
+    if (heldCards[i] == false) {
+      if (numSelectedCards < 13) {
+        let selectedCards = heldCards;
+        selectedCards[i] = true;
+        setHeldCards(selectedCards);
+
         setNumSelectedCards(numSelectedCards + 1); 
       }
     }
@@ -156,24 +220,39 @@ function App() {
   }
 
   function deselectCard(i) {
-
+    let selectedCards = heldCards;
+    selectedCards[i] = false; 
+    setHeldCards(selectedCards);
+    setNumSelectedCards(numSelectedCards - 1); 
   }
 
   function play() {
     if (currentPlayer == playerNumber) {
       if (numSelectedCards == 0) {
         alert("Select Cards or Pass"); 
-      } else if (numSelectedCards == 4) {
+      } else if (numSelectedCards == 4 || numSelectedCards > 5) {
         alert("Select 1, 2, 3, or 5 Cards."); 
       } else {
         if (cardCount == 0 || numSelectedCards == cardCount) {
-          console.log(`COUNT ${cardCount}`); 
- 
-          socket.emit('checkValidMove', playerNumber, holdingCards, currentCard, numSelectedCards); 
+          let cardsInHand = [];
+
+          for (let i = 0; i < 13; i++) {
+            if (heldCards[i] == true) {
+              console.log(`trying to play ${i}`)
+              cardsInHand.push(cards[i]);
+            }
+          }
+
+          socket.emit('checkValidMove', playerNumber, heldCards, cardsInHand, cardsInDeck, numSelectedCards); 
 
         } else {
-          alert(`You need ${cardCount} number of cards.`);
+          if (cardCount == 1) {
+            alert(`You need to play a single.`);
+          } else {
+            alert(`You can only play ${cardCount} number of cards.`);
+          }
         }
+
       }
     } else {
       alert("NOT YOUR TURN"); 
@@ -183,11 +262,11 @@ function App() {
   function pass() {
     if (currentPlayer == playerNumber) {
       if (cardCount != 0) {
-        console.log("increasing passes? -> socket"); 
+        alert("YOU PASSED");
+        socket.emit('deckChange', cardsInDeck, playerNumber); 
         socket.emit('increasePasses'); 
-        socket.emit('deckChange', currentCard, playerNumber); 
       } else {
-        alert("It is your turn to start the round"); 
+        alert("It is your turn to start the round!"); 
       }
       
     } else {
@@ -207,35 +286,43 @@ function App() {
         <h2>Player {currentPlayer}'s Turn</h2>
         <p> Deck: </p>
         <div className = "playerCards">
-          <Deck card_to_display={currentCard[0]}></Deck>
-          <Deck card_to_display={currentCard[1]}></Deck>
-          <Deck card_to_display={currentCard[2]}></Deck>
-          <Deck card_to_display={currentCard[3]}></Deck>
-          <Deck card_to_display={currentCard[4]}></Deck>
+          <Deck card_to_display={cardsInDeck[0]}></Deck>
+          <Deck card_to_display={cardsInDeck[1]}></Deck>
+          <Deck card_to_display={cardsInDeck[2]}></Deck>
+          <Deck card_to_display={cardsInDeck[3]}></Deck>
+          <Deck card_to_display={cardsInDeck[4]}></Deck>
         </div>
         <p> You are Player {playerNumber}. Here are your cards: </p>
         <div className = "playerCards">
-          <Card cardFunc={selectCard} index={0} card_to_display={getCard(0)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={1} card_to_display={getCard(1)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={2} card_to_display={getCard(2)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={3} card_to_display={getCard(3)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={4} card_to_display={getCard(4)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={5} card_to_display={getCard(5)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={6} card_to_display={getCard(6)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={7} card_to_display={getCard(7)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={8} card_to_display={getCard(8)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={9} card_to_display={getCard(9)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={10} card_to_display={getCard(10)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={11} card_to_display={getCard(11)} usedCards={usedCardIndexes}></Card>
-          <Card cardFunc={selectCard} index={12} card_to_display={getCard(12)} usedCards={usedCardIndexes}></Card>
+          <Card cardFunc={selectCard} index={0} card_to_display={getCard(0)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={1} card_to_display={getCard(1)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={2} card_to_display={getCard(2)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={3} card_to_display={getCard(3)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={4} card_to_display={getCard(4)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={5} card_to_display={getCard(5)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={6} card_to_display={getCard(6)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={7} card_to_display={getCard(7)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={8} card_to_display={getCard(8)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={9} card_to_display={getCard(9)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={10} card_to_display={getCard(10)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={11} card_to_display={getCard(11)} heldCards={heldCards} usedCards={usedCards}></Card>
+          <Card cardFunc={selectCard} index={12} card_to_display={getCard(12)} heldCards={heldCards} usedCards={usedCards}></Card>
         </div>
         <p> Selected Cards: </p>
         <div className = "playerCards">
-          <SelectedCards cardFunc={deselectCard} index={0} card_to_display={holdingCards[0]}></SelectedCards>
-          <SelectedCards cardFunc={deselectCard} index={1} card_to_display={holdingCards[1]}></SelectedCards>
-          <SelectedCards cardFunc={deselectCard} index={2} card_to_display={holdingCards[2]}></SelectedCards>
-          <SelectedCards cardFunc={deselectCard} index={3} card_to_display={holdingCards[3]}></SelectedCards>
-          <SelectedCards cardFunc={deselectCard} index={4} card_to_display={holdingCards[4]}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={0} card_to_display={getCard(0)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={1} card_to_display={getCard(1)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={2} card_to_display={getCard(2)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={3} card_to_display={getCard(3)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={4} card_to_display={getCard(4)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={5} card_to_display={getCard(5)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={6} card_to_display={getCard(6)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={7} card_to_display={getCard(7)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={8} card_to_display={getCard(8)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={9} card_to_display={getCard(9)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={10} card_to_display={getCard(10)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={11} card_to_display={getCard(11)} heldCards={heldCards}></SelectedCards>
+          <SelectedCards cardFunc={deselectCard} index={12} card_to_display={getCard(12)} heldCards={heldCards}></SelectedCards>
         </div>
         <hr></hr>
         <div className="play_or_pass">

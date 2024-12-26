@@ -205,11 +205,42 @@ function higherThanDeck(playerCards, deckCards, numCards) {
         }
       } else if (playType1 == 52) {
         //both are flushes
-        if (playerCards[4].value > deckCards[4].value) {
+        if (playerCards[4].number > deckCards[4].number) {
           return true;
+        } else if (playerCards[4].number == deckCards[4].number) {
+          if (playerCards[3].number > deckCards[3].number) {
+            return true;
+          } else if (playerCards[3].number == deckCards[3].number) {
+            if (playerCards[2].number > deckCards[2].number) {
+              return true;
+            } else if (playerCards[2].number == deckCards[2].number) {
+              if (playerCards[1].number > deckCards[1].number) {
+                return true;
+              } else if (playerCards[1].number == deckCards[1].number) {
+                if (playerCards[0].number > deckCards[0].number) {
+                  return true; 
+                } else if (playerCards[0].number == deckCards[0].number) {
+                  if (playerCards[4].value > deckCards[0].value) {
+                    return true;
+                  } else {
+                    return false; 
+                  }
+                } else {
+                  return false;
+                }
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          } else {
+            return false;
+          }
         } else {
           return false;
         }
+        
       } else if (playType1 == 53) {
         //both are full-houses
 
@@ -306,7 +337,7 @@ io.on('connection', (socket) => {
       if (amountOfPasses < 2) {
         console.log(`increasing server passes? -> ${amountOfPasses}`)
         amountOfPasses += 1; 
-        io.emit('updatePass', amountOfPasses); 
+        io.emit('updatePass'); 
       } else if (amountOfPasses == 2) {
         amountOfPasses = 0; 
         io.emit('newRound');
@@ -322,7 +353,9 @@ io.on('connection', (socket) => {
       io.emit("show_results", winner);
     }); 
 
-    socket.on("checkValidMove", (playerNum, playerCards, deckCards, numCards) => {
+    socket.on("checkValidMove", (playerNum, heldCards, playerCards, deckCards, numCards) => {
+      console.log(`VALID ThIS? = ${playerNum}, ${heldCards}, ${playerCards}, ${deckCards}, ${numCards}`); 
+      
       let playType = getPlayType(playerCards, numCards); 
 
       console.log(`meow ${deckCards.length}`);
@@ -339,7 +372,7 @@ io.on('connection', (socket) => {
           }
 
           console.log("BEFORE_CONFIRMATION");
-          socket.emit('confirmMove', numCards); 
+          socket.emit('confirmMove', heldCards, numCards); 
 
           io.emit('nextPlayer', playerCards, newPlayer);
 
@@ -354,7 +387,8 @@ io.on('connection', (socket) => {
             newPlayer = playerNum + 1; 
           }
 
-          socket.emit('confirmMove', numCards); 
+          console.log("BEFORE_CONFIRMATION");
+          socket.emit('confirmMove', heldCards, numCards); 
 
           io.emit('nextPlayer', playerCards, newPlayer);
 

@@ -12,7 +12,7 @@ const image_urls = {
   "crow": crowLogo
 }
 
-export default function SelectedCards({cardFunc, index, card_to_display}) {
+export default function SelectedCards({cardFunc, index, card_to_display, heldCards}) {
     console.log({card_to_display})
 
     function handleClick(i) {
@@ -20,13 +20,15 @@ export default function SelectedCards({cardFunc, index, card_to_display}) {
     }
 
     if (card_to_display == undefined) {
-        return;
-      } else {
-        let value = card_to_display.value; 
-        let number = card_to_display.number;
-        let suit = card_to_display.suit;
-        console.log(`${value}, ${number}, ${suit}`)
-    
+      return;
+    } else {
+
+      let value = card_to_display.value; 
+      let number = card_to_display.number;
+      let suit = card_to_display.suit;
+      console.log(`${value}, ${number}, ${suit}`)
+
+      if (heldCards[index] == true) {
         return (
           <div className="playerCard" onClick={() => {handleClick(index)}}>
             <h1>{number} of {suit}s</h1>
@@ -35,5 +37,8 @@ export default function SelectedCards({cardFunc, index, card_to_display}) {
           />
           </div>
         );
+      } else {
+        return;
+      }  
     }
 }; 
