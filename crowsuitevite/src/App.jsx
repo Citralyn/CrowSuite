@@ -5,10 +5,10 @@ import './App.css'
 import Card from './components/Card.jsx'
 import SelectedCards from './components/SelectedCards.jsx'
 import Deck from './components/Deck.jsx'
+import test from 'node:test';
 
 function App() {
   // for tracking state of game
-  const [count, setCount] = useState(0);
   const [playerNumber, setPlayerNumber] = useState(0);
   const [cards, setCards] = useState([]);
   const [currentPlayer, changePlayer] = useState(1); 
@@ -43,6 +43,7 @@ function App() {
     11: false,
     12: false
   });
+  const [testCount, setTestCount] = useState(13); 
   const [individualCardCount, setIndividualCardCount] = useState(13); 
   const [numOfPasses, updatePassNum] = useState(0); 
   const [cardCount, setCardCount] = useState(0);
@@ -67,7 +68,8 @@ function App() {
     })
 
     socket.on('nextPlayer', (newCards, newPlayer) => {
-      alert(`CURR: ${newPlayer}, YOU: ${playerNumber}`); 
+      //alert(`CURR: ${newPlayer}, YOU: ${playerNumber}`); 
+      console.log(`my current count = ${individualCardCount}`)
       console.log("nextCard socket");
       console.log(newPlayer)
       console.log(`PASS -> ${numOfPasses}`); 
@@ -95,15 +97,17 @@ function App() {
       setDeckCards([]);
       setCardCount(0); 
       updatePassNum(0); 
-      alert(`CURR: ${currentPlayer}, YOU: ${playerNumber}`); 
+
+      //alert(`CURR: ${currentPlayer}, YOU: ${playerNumber}`); 
       if (currentPlayer == playerNumber) {
-        alert("Your turn to start");
+        //alert("Your turn to start");
       } else {
-        alert(`${currentPlayer}'s turn to start`)
+        //alert(`${currentPlayer}'s turn to start`)
       }
     })
 
     socket.on('show_results', (winner) => {
+      console.log(`${winner} won!`); 
       if (winner == playerNumber) {
         alert("YOU WON!");
       } else {
@@ -143,6 +147,17 @@ function App() {
 
       let updatedUsedCards = usedCards; 
 
+      //for testing purposes
+      async function testCall() {
+        const result = await setNum(testCount - 1);
+        console.log(`test -> ${result}`);
+      }
+      testCall(); 
+
+      if (testCount == 0) {
+        alert("test done")
+      }
+      //
       
 
       for (let i = 0; i < 13; i++) {
@@ -160,6 +175,8 @@ function App() {
       addToUsed(updatedUsedCards);
 
       let newIndividualCount = individualCardCount - numCardsPlayed;
+
+      console.log(`NEWCOUNT -> ${newIndividualCount}`); 
 
       if (newIndividualCount == 0) {
         socket.emit('game_complete', currentPlayer); 
@@ -189,16 +206,6 @@ function App() {
   }, []);
 
   // for events/functions that react to the DOM
-  function handleCount() {
-    //example - for testing purposes
-    if (count >= 12) {
-      setCount(0); 
-    } else {
-      setCount(count + 1); 
-    }
-
-    socket.emit('count', count); 
-  }
 
   function getCard(i) {
     let selectedCard = cards[i];
@@ -212,7 +219,6 @@ function App() {
         let selectedCards = heldCards;
         selectedCards[i] = true;
         setHeldCards(selectedCards);
-
         setNumSelectedCards(numSelectedCards + 1); 
       }
     }
@@ -259,10 +265,16 @@ function App() {
     }
   }
 
+  function setNum(num) {
+    setTestCount(num); 
+    return testCount; 
+  }
+
   function pass() {
     if (currentPlayer == playerNumber) {
       if (cardCount != 0) {
-        alert("YOU PASSED");
+        //alert("YOU PASSED");
+        console.log("YOU PASSED"); 
         socket.emit('deckChange', cardsInDeck, playerNumber); 
         socket.emit('increasePasses'); 
       } else {
@@ -354,9 +366,6 @@ function App() {
       <h1>CrowSuite2</h1>
       <h2> {playerNumber} </h2>
       <div className="card">
-        <button onClick={() => {handleCount()}}>
-          count is {count}
-        </button>
         <p>
           For Big2 and Bird Enthusiasts!
         </p>

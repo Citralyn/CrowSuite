@@ -53,6 +53,7 @@ shuffleCards(cards);
 
 let activePlayers = 0;
 let amountOfPasses = 0; 
+let numberCards = [13, 13, 13, 13]; 
 
 // checking functions
 
@@ -371,6 +372,16 @@ io.on('connection', (socket) => {
             newPlayer = playerNum + 1; 
           }
 
+          //testing purposes
+          numberCards[playerNum - 1] -= numCards; 
+          for (let i = 0; i < 4; i++) {
+            console.log(`num cards ${i} ->  ${numberCards[i]}`); 
+          }
+          if (numberCards[playerNum - 1] <= 0) {
+            io.emit("show_results", playerNum);
+          }
+          //
+
           console.log("BEFORE_CONFIRMATION");
           socket.emit('confirmMove', heldCards, numCards); 
 
@@ -380,12 +391,23 @@ io.on('connection', (socket) => {
           io.emit('setPassToZero'); 
 
         } else if (higherThanDeck(playerCards, deckCards, numCards)) {
+          //duplicate code :(
 
           let newPlayer = 1; 
 
           if (playerNum < 4) {
             newPlayer = playerNum + 1; 
           }
+
+          //testing purposes
+          numberCards[playerNum - 1] -= numCards; 
+          for (let i = 0; i < 4; i++) {
+            console.log(`num cards ${i} ->  ${numberCards[i]}`); 
+          }
+          if (numberCards[playerNum - 1] <= 0) {
+            io.emit("show_results", playerNum);
+          }
+          //
 
           console.log("BEFORE_CONFIRMATION");
           socket.emit('confirmMove', heldCards, numCards); 
@@ -394,7 +416,7 @@ io.on('connection', (socket) => {
 
           amountOfPasses = 0; 
           io.emit('setPassToZero'); 
-
+          
         } else {
           socket.emit('tooLow');
         }
