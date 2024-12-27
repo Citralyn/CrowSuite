@@ -350,10 +350,6 @@ io.on('connection', (socket) => {
       io.emit('setPassToZero'); 
     })
 
-    socket.on('game_complete', (winner) => {
-      io.emit("show_results", winner);
-    }); 
-
     socket.on("checkValidMove", (playerNum, heldCards, playerCards, deckCards, numCards) => {
       console.log(`VALID ThIS? = ${playerNum}, ${heldCards}, ${playerCards}, ${deckCards}, ${numCards}`); 
       
@@ -416,7 +412,7 @@ io.on('connection', (socket) => {
 
           amountOfPasses = 0; 
           io.emit('setPassToZero'); 
-          
+
         } else {
           socket.emit('tooLow');
         }

@@ -9,6 +9,7 @@ import test from 'node:test';
 
 function App() {
   // for tracking state of game
+  const [gameState, setGameState] = useState(0); 
   const [playerNumber, setPlayerNumber] = useState(0);
   const [cards, setCards] = useState([]);
   const [currentPlayer, changePlayer] = useState(1); 
@@ -43,8 +44,6 @@ function App() {
     11: false,
     12: false
   });
-  const [testCount, setTestCount] = useState(13); 
-  const [individualCardCount, setIndividualCardCount] = useState(13); 
   const [numOfPasses, updatePassNum] = useState(0); 
   const [cardCount, setCardCount] = useState(0);
   const [numSelectedCards, setNumSelectedCards] = useState(0);
@@ -69,7 +68,6 @@ function App() {
 
     socket.on('nextPlayer', (newCards, newPlayer) => {
       //alert(`CURR: ${newPlayer}, YOU: ${playerNumber}`); 
-      console.log(`my current count = ${individualCardCount}`)
       console.log("nextCard socket");
       console.log(newPlayer)
       console.log(`PASS -> ${numOfPasses}`); 
@@ -113,6 +111,11 @@ function App() {
       } else {
         alert(`PLAYER ${winner} WON!`);
       }
+      
+      setTimeout(() => {
+        setGameState(2); 
+      }, 1000);
+      
     }); 
 
     socket.on('setCardAmount', (newCardAmount) => {
@@ -174,15 +177,6 @@ function App() {
 
       addToUsed(updatedUsedCards);
 
-      let newIndividualCount = individualCardCount - numCardsPlayed;
-
-      console.log(`NEWCOUNT -> ${newIndividualCount}`); 
-
-      if (newIndividualCount == 0) {
-        socket.emit('game_complete', currentPlayer); 
-      }
-
-      setIndividualCardCount(newIndividualCount); 
       let currentDeck = [];
 
       for (let i = 0; i < 13; i++) {
@@ -286,7 +280,17 @@ function App() {
     }
   }
 
-  if (cards != []) {
+  function startGame() {
+    setGameState(1); 
+  }
+
+  if (gameState == 0) {
+    return(
+      <>
+        <button onClick={() => {startGame()}}>PLAY</button>
+      </>
+    )
+  } else if (gameState == 1 && cards != []) {
     return (
       <>
         <div className="header">
@@ -356,28 +360,11 @@ function App() {
         </p>
       </>
     )
-
-  } else {
+  } else if (gameState == 2) {
     return(
-      <>
-      <div>
-        <img src={crowLogo} className="logo" />
-      </div>
-      <h1>CrowSuite2</h1>
-      <h2> {playerNumber} </h2>
-      <div className="card">
-        <p>
-          For Big2 and Bird Enthusiasts!
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Made with Socket.io and Vite
-      </p>
-    </>
+      <h1>End of Game</h1>
     )
   }
-
-  
 }
 
 export default App
