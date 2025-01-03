@@ -51,10 +51,6 @@ for (let j = 0; j < 4; j++) {
 
 shuffleCards(cards); 
 
-let activePlayers = 0;
-let amountOfPasses = 0; 
-let numberCards = [13, 13, 13, 13]; 
-
 // checking functions
 
 function getPlayType(playerCards, numCards) {
@@ -298,14 +294,22 @@ function higherThanDeck(playerCards, deckCards, numCards) {
       }
     }
   }
-
-
 }
+
+let playerCount = 0;
+//let playerMap = new Map();  
+let activePlayers = 0;
+let amountOfPasses = 0; 
+let numberCards = [13, 13, 13, 13]; 
+let usernames = ["", "", "", ""]; 
 
 // on connection 
 
 io.on('connection', (socket) => {
-    console.log("user connected.");
+
+    socket.on('disconnection', (num) => {
+      console.log(`${num} disconnected.`);
+    }); 
 
     activePlayers += 1;
 
@@ -315,10 +319,26 @@ io.on('connection', (socket) => {
 
     socket.emit("updatePlayerNumber", activePlayers); 
 
-    let start_index = (activePlayers - 1) * 13;
-    let end_index = start_index + 13;
+    socket.on("confirmUpdatedPlayerNumber", (num) => {
+      console.log(`${num} connected.`);
 
-    socket.emit('deal_cards', cards.slice(start_index, end_index)); 
+      let start_index = (num - 1) * 13;
+      let end_index = start_index + 13;
+
+      socket.emit('deal_cards', cards.slice(start_index, end_index)); 
+      io.emit('addConnectedPlayers', num); 
+    })
+
+    socket.on("getNewPlayerNumber", (num) => {
+      let newNum = num + 1; 
+
+      if (newNum > 4) {
+        newNum = 1; 
+      }
+  
+      socket.emit("updatePlayerNumber", newNum); 
+
+    })
 
     socket.on('deckChange', (playedCards, player) => {
       let newPlayer = 1; 
@@ -349,6 +369,18 @@ io.on('connection', (socket) => {
       amountOfPasses = 0; 
       io.emit('setPassToZero'); 
     })
+
+    socket.on('updateUser', (username, playerNumber) => {
+      playerCount += 1;
+      usernames[playerNumber - 1] = username; 
+
+      console.log(`Player ${playerNumber}: ${username}`); 
+
+      if (playerCount == 4) {
+        console.log("READY TO START")
+        io.emit('gameReady', usernames); 
+      }
+    });
 
     socket.on("checkValidMove", (playerNum, heldCards, playerCards, deckCards, numCards) => {
       console.log(`VALID ThIS? = ${playerNum}, ${heldCards}, ${playerCards}, ${deckCards}, ${numCards}`); 

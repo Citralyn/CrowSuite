@@ -10,9 +10,20 @@ import test from 'node:test';
 function App() {
   // for tracking state of game
   const [gameState, setGameState] = useState(0); 
+  const [readyToStart, setReadyToStart] = useState(false); 
   const [playerNumber, setPlayerNumber] = useState(0);
   const [cards, setCards] = useState([]);
+  const [connectedPlayers, setPlayers] = useState({
+    1: false,
+    2: false,
+    3: false,
+    4: false
+  });
   const [currentPlayer, changePlayer] = useState(1); 
+  const [username, setUsername] = useState(""); 
+  const [currentUsers, setUsers] = useState([]); 
+  const [otherPlayers, setOtherPlayers] = useState([]); 
+  const [gameWinner, setWinner] = useState(-1); 
   const [cardsInDeck, setDeckCards] = useState([]);
   const [heldCards, setHeldCards] = useState({
     0: false,
@@ -47,6 +58,7 @@ function App() {
   const [numOfPasses, updatePassNum] = useState(0); 
   const [cardCount, setCardCount] = useState(0);
   const [numSelectedCards, setNumSelectedCards] = useState(0);
+  const [numberPlayers, setNumberPlayers] = useState(0);
 
   // for testing purposes
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -56,9 +68,23 @@ function App() {
     socket.on('connect', onConnect);
 
     socket.on('updatePlayerNumber', (num) => {
-      console.log(num); 
-      setPlayerNumber(num); 
+      if (playerNumber == 0 && connectedPlayers[num] == false) {
+        setPlayerNumber(num); 
+        socket.emit('confirmUpdatedPlayerNumber', num); 
+      } else {
+        if (playerNumber == 0 && numberPlayers < 4) {
+          socket.emit('getNewPlayerNumber', num);  
+        }
+      }
     })
+
+    socket.on('addConnectedPlayers', (num) => {
+      let currentConnectedPlayers = connectedPlayers; 
+      currentConnectedPlayers[num] = true; 
+      setPlayers(currentConnectedPlayers); 
+
+      setNumberPlayers(numberPlayers + 1); 
+    }); 
 
     socket.on('deal_cards', (cards) => {
       console.log("DEALT.")
@@ -104,8 +130,28 @@ function App() {
       }
     })
 
+    socket.on('gameReady', (users) => {
+      setUsers(users); 
+      let userNum = 0;
+      let tempOthers = ["", "", ""]; 
+      for (let i = 0; i < 4; i++) {
+        if (i < (playerNumber - 1)) {
+          userNum = i; 
+        } else {
+          userNum = i - 1; 
+        }
+
+        if (i != (playerNumber - 1)) {
+          tempOthers[userNum] = users[i];
+        }
+      }
+      setOtherPlayers(tempOthers); 
+      setReadyToStart(true); 
+    }); 
+
     socket.on('show_results', (winner) => {
       console.log(`${winner} won!`); 
+      setWinner(winner); 
       if (winner == playerNumber) {
         alert("YOU WON!");
       } else {
@@ -195,6 +241,7 @@ function App() {
     }
 
     return(() => {
+      socket.emit('disconnection', playerNumber); 
       socket.off('connect', onConnect);
     })
   }, []);
@@ -281,16 +328,42 @@ function App() {
   }
 
   function startGame() {
-    setGameState(1); 
+    setGameState(2); 
+  }
+
+  function addUser(user) {
+    setUsername(user); 
+    console.log(`player ${playerNumber} has username ${user}`)
+    socket.emit('updateUser', user, playerNumber); 
+    setGameState(1);
   }
 
   if (gameState == 0) {
     return(
+      <form>
+        <label>
+          <p>Player Name</p>
+          <input type="text" onChange={e => setUsername(e.target.value)}/>
+        </label>
+        <div>
+          <button type="submit" onClick={() => {addUser(username)}}>Submit</button>
+        </div>
+      </form>
+    )
+
+  } else if (gameState == 1 && !readyToStart) {
+    return(
       <>
-        <button onClick={() => {startGame()}}>PLAY</button>
+        <h1>Waiting for more players...</h1>
       </>
     )
-  } else if (gameState == 1 && cards != []) {
+  } else if (gameState == 1 && readyToStart) {
+    return(
+      <>
+        <button onClick={() => {startGame()}}>START</button>
+      </>
+    )
+  } else if (gameState == 2 && cards != []) {
     return (
       <>
         <div className="header">
@@ -300,13 +373,26 @@ function App() {
         <p className="read-the-docs">For Big2 and Bird Enthusiasts!</p>
         <hr></hr>
         <h2>Player {currentPlayer}'s Turn</h2>
-        <p> Deck: </p>
-        <div className = "playerCards">
-          <Deck card_to_display={cardsInDeck[0]}></Deck>
-          <Deck card_to_display={cardsInDeck[1]}></Deck>
-          <Deck card_to_display={cardsInDeck[2]}></Deck>
-          <Deck card_to_display={cardsInDeck[3]}></Deck>
-          <Deck card_to_display={cardsInDeck[4]}></Deck>
+        <div className="player">
+          <h1>{otherPlayers[1]}</h1>
+        </div>
+        <div className="centerFold">
+          <div className="player">
+            <h1>{otherPlayers[0]}</h1>
+          </div>
+          <div className="deck">
+            <p> Deck: </p>
+            <div className = "playerCards">
+              <Deck card_to_display={cardsInDeck[0]}></Deck>
+              <Deck card_to_display={cardsInDeck[1]}></Deck>
+              <Deck card_to_display={cardsInDeck[2]}></Deck>
+              <Deck card_to_display={cardsInDeck[3]}></Deck>
+              <Deck card_to_display={cardsInDeck[4]}></Deck>
+            </div>
+          </div>
+          <div className="player">
+            <h1>{otherPlayers[2]}</h1>
+          </div>
         </div>
         <p> You are Player {playerNumber}. Here are your cards: </p>
         <div className = "playerCards">
@@ -360,9 +446,12 @@ function App() {
         </p>
       </>
     )
-  } else if (gameState == 2) {
+  } else if (gameState == 3) {
     return(
+      <>
       <h1>End of Game</h1>
+      <h1>{gameWinner}</h1>
+      </>
     )
   }
 }
