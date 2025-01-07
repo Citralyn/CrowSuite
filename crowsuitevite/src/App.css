@@ -8,6 +8,13 @@
   border: 2px black solid;
 }
 
+.centerFold {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  gap: 25%;
+}
+
 .play_or_pass {
   align-items: center;
   justify-content: center;

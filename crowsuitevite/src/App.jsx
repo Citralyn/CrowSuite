@@ -19,6 +19,12 @@ function App() {
     3: false,
     4: false
   });
+  const [playerAmounts, setAmounts] = useState({
+    1: 13,
+    2: 13,
+    3: 13,
+    4: 13
+  }); 
   const [currentPlayer, changePlayer] = useState(1); 
   const [username, setUsername] = useState(""); 
   const [currentUsers, setUsers] = useState([]); 
@@ -65,7 +71,15 @@ function App() {
 
   // for events that happen after each render
   useEffect(() => {
-    socket.on('connect', onConnect);
+    socket.on('connect', () => {
+      onConnect;
+/*       setTimeout(() => {
+        if (playerNumber == 0) {
+          location.replace(location.href); 
+          alert(`player ${playerNumber} error - RELOAD`); 
+        }
+      }, 1000);  */
+    });
 
     socket.on('updatePlayerNumber', (num) => {
       if (playerNumber == 0 && connectedPlayers[num] == false) {
@@ -85,6 +99,13 @@ function App() {
 
       setNumberPlayers(numberPlayers + 1); 
     }); 
+
+    socket.on('updatePlayerAmounts', (player, numCards) => {
+      let currentPlayerAmounts = playerAmounts; 
+      currentPlayerAmounts[player] -= numCards; 
+      setAmounts(currentPlayerAmounts); 
+
+    })
 
     socket.on('deal_cards', (cards) => {
       console.log("DEALT.")
@@ -115,6 +136,7 @@ function App() {
         12: false
       })
       setNumSelectedCards(0); 
+      updateOtherPlayers(); 
     }); 
 
     socket.on('newRound', () => {
@@ -130,22 +152,12 @@ function App() {
       }
     })
 
-    socket.on('gameReady', (users) => {
+    socket.on('updateUsers', (users) => {
       setUsers(users); 
-      let userNum = 0;
-      let tempOthers = ["", "", ""]; 
-      for (let i = 0; i < 4; i++) {
-        if (i < (playerNumber - 1)) {
-          userNum = i; 
-        } else {
-          userNum = i - 1; 
-        }
+    })
 
-        if (i != (playerNumber - 1)) {
-          tempOthers[userNum] = users[i];
-        }
-      }
-      setOtherPlayers(tempOthers); 
+    socket.on('gameReady', () => {
+      updateOtherPlayers(); 
       setReadyToStart(true); 
     }); 
 
@@ -159,7 +171,7 @@ function App() {
       }
       
       setTimeout(() => {
-        setGameState(2); 
+        setGameState(3); 
       }, 1000);
       
     }); 
@@ -195,18 +207,6 @@ function App() {
       }
 
       let updatedUsedCards = usedCards; 
-
-      //for testing purposes
-      async function testCall() {
-        const result = await setNum(testCount - 1);
-        console.log(`test -> ${result}`);
-      }
-      testCall(); 
-
-      if (testCount == 0) {
-        alert("test done")
-      }
-      //
       
 
       for (let i = 0; i < 13; i++) {
@@ -235,6 +235,30 @@ function App() {
       console.log(`done confirmation`);
 
     })
+
+    function updateOtherPlayers() {
+      let userNum = 0;
+      let tempOthers = [
+        {user: "", amount: 13},
+        {user: "", amount: 13},
+        {user: "", amount: 13}]; 
+
+      for (let i = 0; i < 4; i++) {
+        if (i < (playerNumber - 1)) {
+          userNum = i; 
+        } else {
+          userNum = i - 1; 
+        }
+
+        if (i != (playerNumber - 1)) {
+          console.log(`${playerNumber} vs ${currentUsers[i]}`)
+          tempOthers[userNum] = {}; 
+          tempOthers[userNum].user = currentUsers[i];
+          tempOthers[userNum].amount = playerAmounts[i]; 
+        }
+      }
+      setOtherPlayers(tempOthers); 
+    }
 
     function onConnect() {
       setIsConnected(true);
@@ -306,6 +330,7 @@ function App() {
     }
   }
 
+  //random test function
   function setNum(num) {
     setTestCount(num); 
     return testCount; 
@@ -332,18 +357,23 @@ function App() {
   }
 
   function addUser(user) {
-    setUsername(user); 
-    console.log(`player ${playerNumber} has username ${user}`)
-    socket.emit('updateUser', user, playerNumber); 
-    setGameState(1);
+    if (playerNumber == 0) {
+      location.replace(location.href); 
+      alert(`player ${playerNumber} error - RELOAD`); 
+    } else {
+      setUsername(user); 
+      console.log(`player ${playerNumber} has username ${user}`)
+      socket.emit('updateUser', user, playerNumber); 
+      setGameState(1);
+    }
   }
 
   if (gameState == 0) {
     return(
       <form>
         <label>
-          <p>Player Name</p>
-          <input type="text" onChange={e => setUsername(e.target.value)}/>
+          <p>Player {playerNumber} Name</p>
+          <input id="username" type="text" onChange={e => setUsername(e.target.value)}/>
         </label>
         <div>
           <button type="submit" onClick={() => {addUser(username)}}>Submit</button>
@@ -374,11 +404,13 @@ function App() {
         <hr></hr>
         <h2>Player {currentPlayer}'s Turn</h2>
         <div className="player">
-          <h1>{otherPlayers[1]}</h1>
+          <h1>{otherPlayers[1].user}</h1>
+          <h1>{otherPlayers[1].amount}</h1>
         </div>
         <div className="centerFold">
           <div className="player">
-            <h1>{otherPlayers[0]}</h1>
+          <h1>{otherPlayers[0].user}</h1>
+          <h1>{otherPlayers[0].amount}</h1>
           </div>
           <div className="deck">
             <p> Deck: </p>
@@ -391,7 +423,8 @@ function App() {
             </div>
           </div>
           <div className="player">
-            <h1>{otherPlayers[2]}</h1>
+          <h1>{otherPlayers[2].user}</h1>
+          <h1>{otherPlayers[2].amount}</h1>
           </div>
         </div>
         <p> You are Player {playerNumber}. Here are your cards: </p>

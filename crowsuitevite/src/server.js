@@ -378,7 +378,8 @@ io.on('connection', (socket) => {
 
       if (playerCount == 4) {
         console.log("READY TO START")
-        io.emit('gameReady', usernames); 
+        io.emit('updateUsers', usernames); 
+        io.emit('gameReady'); 
       }
     });
 
@@ -400,7 +401,7 @@ io.on('connection', (socket) => {
             newPlayer = playerNum + 1; 
           }
 
-          //testing purposes
+          //does this work? 
           numberCards[playerNum - 1] -= numCards; 
           for (let i = 0; i < 4; i++) {
             console.log(`num cards ${i} ->  ${numberCards[i]}`); 
@@ -408,6 +409,8 @@ io.on('connection', (socket) => {
           if (numberCards[playerNum - 1] <= 0) {
             io.emit("show_results", playerNum);
           }
+
+          io.emit('updatePlayerAmounts', playerNum, numCards); 
           //
 
           console.log("BEFORE_CONFIRMATION");
@@ -427,7 +430,7 @@ io.on('connection', (socket) => {
             newPlayer = playerNum + 1; 
           }
 
-          //testing purposes
+          //does this work? 
           numberCards[playerNum - 1] -= numCards; 
           for (let i = 0; i < 4; i++) {
             console.log(`num cards ${i} ->  ${numberCards[i]}`); 
@@ -435,6 +438,8 @@ io.on('connection', (socket) => {
           if (numberCards[playerNum - 1] <= 0) {
             io.emit("show_results", playerNum);
           }
+
+          io.emit('updatePlayerAmount', playerNum, numCards); 
           //
 
           console.log("BEFORE_CONFIRMATION");
