@@ -20,15 +20,33 @@ function App() {
     4: false
   });
   const [playerAmounts, setAmounts] = useState({
+    0: 13,
     1: 13,
     2: 13,
-    3: 13,
-    4: 13
+    3: 13
   }); 
   const [currentPlayer, changePlayer] = useState(1); 
   const [username, setUsername] = useState(""); 
-  const [currentUsers, setUsers] = useState([]); 
+  const [currentUsers, setUsers] = useState({
+    0: "",
+    1: "",
+    2: "",
+    3: ""
+  }); 
   const [otherPlayers, setOtherPlayers] = useState([]); 
+
+  //testing purposes
+  const [otherUser, setOtherUsers] = useState({
+    0: "",
+    1: "",
+    2: "",
+  }); 
+  const [otherAmount, setOtherAmounts] = useState({
+    0: 13,
+    1: 13,
+    2: 13
+  }); 
+
   const [gameWinner, setWinner] = useState(-1); 
   const [cardsInDeck, setDeckCards] = useState([]);
   const [heldCards, setHeldCards] = useState({
@@ -100,6 +118,16 @@ function App() {
       setNumberPlayers(numberPlayers + 1); 
     }); 
 
+    //testing purposes
+    socket.on('updateBetterAmounts', (numCardArray) => {
+      let currentPlayerAmounts = playerAmounts; 
+
+      for (let i = 0; i < 4; i++) {
+        currentPlayerAmounts[i] = numCardArray[i];
+      }
+      setAmounts(currentPlayerAmounts); 
+    }); 
+
     socket.on('updatePlayerAmounts', (player, numCards) => {
       let currentPlayerAmounts = playerAmounts; 
       currentPlayerAmounts[player] -= numCards; 
@@ -136,7 +164,10 @@ function App() {
         12: false
       })
       setNumSelectedCards(0); 
-      updateOtherPlayers(); 
+      console.log("HEREnext")
+      console.log(playerNumber)
+      //updateOtherPlayers2(); 
+      //updateOtherPlayers(); 
     }); 
 
     socket.on('newRound', () => {
@@ -153,13 +184,24 @@ function App() {
     })
 
     socket.on('updateUsers', (users) => {
-      setUsers(users); 
+      let tempUsers = currentUsers; 
+      for (let i = 0; i < 4; i++) {
+        tempUsers[i] = users[i];
+      }
+
+      setUsers(tempUsers); 
+      socket.emit('ready'); 
     })
 
     socket.on('gameReady', () => {
-      updateOtherPlayers(); 
+      console.log("HEREready")
+      console.log(playerNumber)
+      //updateOtherPlayers2(); 
+      //updateOtherPlayers(); 
       setReadyToStart(true); 
     }); 
+
+
 
     socket.on('show_results', (winner) => {
       console.log(`${winner} won!`); 
@@ -236,6 +278,7 @@ function App() {
 
     })
 
+    
     function updateOtherPlayers() {
       let userNum = 0;
       let tempOthers = [
@@ -260,6 +303,11 @@ function App() {
       setOtherPlayers(tempOthers); 
     }
 
+    socket.on('angrilyConfirmNumber', (num) => {
+      setPlayerNumber(num);
+      console.log(`${num} !!!`); 
+    })
+
     function onConnect() {
       setIsConnected(true);
     }
@@ -270,6 +318,8 @@ function App() {
     })
   }, []);
 
+
+
   // for events/functions that react to the DOM
 
   function getCard(i) {
@@ -278,6 +328,8 @@ function App() {
   }
 
   function selectCard(i) {
+    console.log(`PLAYERNUMBER -> ${playerNumber}`)
+    //updateOtherPlayers2(); 
 
     if (heldCards[i] == false) {
       if (numSelectedCards < 13) {
@@ -297,8 +349,43 @@ function App() {
     setNumSelectedCards(numSelectedCards - 1); 
   }
 
+  function updateOtherPlayers2() {
+    console.log("updatedOtherPlayers")
+    console.log("all USERS:")
+    for (let i = 0; i < 4; i++) {
+      console.log(`${i}: ${currentUsers[i]}`)
+    }
+
+    let j = 0;
+
+    let currOtherPlayers = otherUser; 
+    let currOtherAmounts = otherAmount; 
+    console.log('HELP')
+    console.log(playerNumber)
+
+    for (let i = 1; i <= 4; i++) { 
+      if (i != playerNumber) {
+        console.log(`BAD ${i} ${playerNumber}`)
+        currOtherPlayers[j] = i; 
+        currOtherAmounts[j] = i; 
+        j++; 
+      }
+    }
+
+    console.log("all OTHERS:")
+    for (let i = 0; i < 3; i++) {
+      console.log(`${i}: ${currOtherPlayers[i]}`)
+    }
+
+    setOtherUsers(currOtherPlayers);
+    setOtherAmounts(currOtherAmounts);
+  }
+
+
   function play() {
+  
     if (currentPlayer == playerNumber) {
+      console.log(`PLAYERNUMBER(PLAY) -> ${playerNumber}`)
       if (numSelectedCards == 0) {
         alert("Select Cards or Pass"); 
       } else if (numSelectedCards == 4 || numSelectedCards > 5) {
@@ -353,6 +440,7 @@ function App() {
   }
 
   function startGame() {
+    updateOtherPlayers2(); 
     setGameState(2); 
   }
 
@@ -396,21 +484,26 @@ function App() {
   } else if (gameState == 2 && cards != []) {
     return (
       <>
+        <div className="columnKindof">
         <div className="header">
           <h1>CrowSuite</h1>
           <img src={crowLogo} className="logo" />
         </div>
         <p className="read-the-docs">For Big2 and Bird Enthusiasts!</p>
         <hr></hr>
-        <h2>Player {currentPlayer}'s Turn</h2>
+        <h2>Player {currentUsers[currentPlayer - 1]}'s Turn</h2>
         <div className="player">
-          <h1>{otherPlayers[1].user}</h1>
-          <h1>{otherPlayers[1].amount}</h1>
+          <h2>USER: {currentUsers[otherUser[1] - 1]}</h2>
+          <h2>COUNT: {playerAmounts[otherAmount[1] - 1]}</h2>
+          {/* <h1>{otherPlayers[1].user}</h1>
+          <h1>{otherPlayers[1].amount}</h1> */}
         </div>
         <div className="centerFold">
           <div className="player">
-          <h1>{otherPlayers[0].user}</h1>
-          <h1>{otherPlayers[0].amount}</h1>
+            <h2>USER: {currentUsers[otherUser[0] - 1]}</h2>
+            <h2>COUNT: {playerAmounts[otherAmount[0] - 1]}</h2>
+          {/* <h1>{otherPlayers[0].user}</h1>
+          <h1>{otherPlayers[0].amount}</h1> */}
           </div>
           <div className="deck">
             <p> Deck: </p>
@@ -423,11 +516,13 @@ function App() {
             </div>
           </div>
           <div className="player">
-          <h1>{otherPlayers[2].user}</h1>
-          <h1>{otherPlayers[2].amount}</h1>
+            <h2>USER: {currentUsers[otherUser[2] - 1]}</h2>
+            <h2>COUNT: {playerAmounts[otherAmount[2] - 1]}</h2>
+            {/* <h1>{otherPlayers[2].user}</h1>
+            <h1>{otherPlayers[2].amount}</h1> */}
           </div>
         </div>
-        <p> You are Player {playerNumber}. Here are your cards: </p>
+        <p> You are Player {currentUsers[playerNumber - 1]}. Here are your cards: </p>
         <div className = "playerCards">
           <Card cardFunc={selectCard} index={0} card_to_display={getCard(0)} heldCards={heldCards} usedCards={usedCards}></Card>
           <Card cardFunc={selectCard} index={1} card_to_display={getCard(1)} heldCards={heldCards} usedCards={usedCards}></Card>
@@ -477,13 +572,14 @@ function App() {
         <p className="read-the-docs">
           Vite for bundling and development
         </p>
+        </div>
       </>
     )
   } else if (gameState == 3) {
     return(
       <>
       <h1>End of Game</h1>
-      <h1>{gameWinner}</h1>
+      <h1>{currentUsers[gameWinner - 1]} WON!</h1>
       </>
     )
   }
