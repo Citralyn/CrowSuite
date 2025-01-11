@@ -9,7 +9,8 @@ const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", 
+      //change from local host to private ip for testing purposes (SPOT 3)
+      origin: 'http://localhost:5173', 
       methods: ['GET', 'POST'],
     },
 });
@@ -391,7 +392,7 @@ io.on('connection', (socket) => {
 
     socket.on('ready', () => {
       console.log('ready')
-      socket.emit('gameReady');
+      io.emit('gameReady');
     })
 
     socket.on("checkValidMove", (playerNum, heldCards, playerCards, deckCards, numCards) => {

@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/socket.io': {
-        target: 'ws://localhost:5174',
+        //change from local host to private ip for testing purposes (SPOT 2)
+        target: 'http://localhost:5174',
         ws: true,
         rewriteWsOrigin: true,
       },
