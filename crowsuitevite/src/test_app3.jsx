@@ -11,31 +11,28 @@ import WaitingRoomPage from './pages/WaitingRoomPage.jsx'
 function App3() {
     const [gamePage, setGamePage] = useState(0)
     const [pNum, setPNum] = useState(0)
+    //const [mySocket, setSocket] = useState(null); 
   
-    // for events that happen after each render
     useEffect(() => {
       socket.on('connect', () => {
-      changeTest;
+        console.log(socket.id)
+        console.log("CLIENT CONNECTED.")
+       // setSocket(socket); 
       });
   
       return(() => {
-      socket.off('connect', changeTest);
-      })
+        socket.off('connect', () => {
+            console.log("CLIENT DISCONNECTED.")
+        })
+        }); 
     }, []);
   
     useEffect(() => {
       socket.on('updatePlayerNumber', (num) => {
-          console.log(num); 
+          console.log(`Received ${num}`); 
           setPNum(num); 
       })
   }, []);
-  
-    // for events/functions that react to the DOM
-    function changeTest() {
-      let currentTestState = testState;
-      currentTestState = !currentTestState; 
-      setTestState(currentTestState);
-    }
 
     function changeGamePage() {
         let currentGamePage = gamePage; 
@@ -43,7 +40,7 @@ function App3() {
         if (currentGamePage == 6) {
             currentGamePage = 0; 
         }
-
+        socket.emit('pageChange'); 
         setGamePage(currentGamePage); 
     }
 
@@ -60,7 +57,7 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <GamePage></GamePage>
+                <LoginPage playerSocket={socket} playerNumber={pNum}></LoginPage>
             </>
         )
     } else if (gamePage == 2) {
@@ -68,7 +65,7 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <LoginPage></LoginPage>
+                <WaitingRoomPage></WaitingRoomPage>
             </>
         )
     } else if (gamePage == 3) {
@@ -76,15 +73,16 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <ResultsPage></ResultsPage>
+                <GamePage></GamePage>
             </>
         )
     } else if (gamePage == 4) {
         return(
+            
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <TutorialPage></TutorialPage>
+                <ResultsPage></ResultsPage>
             </>
         )
     } else if (gamePage == 5) {
@@ -92,10 +90,10 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <WaitingRoomPage></WaitingRoomPage>
+                <TutorialPage></TutorialPage>
             </>
         )
-    }
+    } 
 };
   
   

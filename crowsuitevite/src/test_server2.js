@@ -25,4 +25,12 @@ let activePlayers = 0;
 io.on('connection', (socket) => {
     activePlayers += 1;
     socket.emit("updatePlayerNumber", activePlayers); 
+
+    socket.on('helloToServer', (num) => {
+        console.log(`received ${num} from client`); 
+    })
+
+    socket.on('pageChange', () => {
+        console.log("Page has changed.")
+    })
 });
