@@ -1,2 +1,117 @@
 // react bootstrap components
 // docusarus 
+
+/*
+
+GAME OBJECT ->
+
+constructor -> sets gameRoom, adds to activePlayers, gets Cards
+
+player object: online (bool), username (string), number of cards (int)
+
+gameRoom (string -> name for actual socket room)
+activePlayers (int)
+readyToStart (bool)
+neededAmountOfCards (int)
+currentPlayerTurn (int)
+numberOfPasses (int)
+cards (2D array)
+cardsInDeck
+
+*/
+
+/*
+Player Functions
+
+
+-> no server needed (no events)
+play game -> goes to login page (with back button)
+how 2 play -> goes to tutorial page (with back button)
+back to home -> goes to home page
+
+select/deselect cards (shows cards depending on used/held)
+**client keeps track of used cards and held cards**
+
+-> server needed (events)
+LOGIN:
+client -> (username)
+server -> creates player object
+-> sends playerNumber, gameNumber, and cards to player
+
+START: 
+client -> ()
+server -> change gamePage for entire room
+
+PLAY:
+client -> (playerNumber, cardHand, numCards)
+server -> checks validity -> updates game values
+//things to consider (validity checking)
+client plays and startOfRound true -> can play any number
+client plays and client cardCount drops to zero -> client won
+
+PASS:
+client -> () -> server -> updates currentPlayerTurn and numberOfPasses
+
+*/
+
+/*
+File Organization
+
+Main.JS (aka layout) -> Header, App, Footer
+
+Header: 
+Text CROWSUITE
+
+Footer:
+Credits
+
+FrontPage:
+Central Image, Button (Play), Button (How 2 Play)
+
+LoginPage:
+Text Input ("Username" as placeholder)
+Button (Enter)
+
+WaitingRoom:
+Text (x/4 players have joined)
+Button (Start Game)
+//if x < 4, button greyed out (can't be pressed)
+// if x == 4, button pressable
+
+GamePage:
+
+COMPONENTS 
+Card
+Deck (comprised of Cards //bigger)
+PlayerCards (comprised of Cards //smaller)
+Opponent 
+
+//which opponents (and order) dependent on player number
+//opponents, deck, and playerCards on grid layout (not moveable)
+
+ResultsPage:
+Text (**username** won!)
+Button (Back to Home)
+
+TutorialPage
+//will plan out more later, instructions how to play big 2
+Button (Back to Home)
+
+Server
+- array (games) of game objects
+- pushes to games array per each new socket connection (or works off current game)
+
+HelperClasses
+
+(Class) Game (gameRoom (string), Player 1, Player 2 (etc), game information, etc)
+(Class) Player (online (bool), username (string), number of cards (int))
+(Class) Card (value, number, suit properties)
+
+HelperFunctions
+
+(Function) GenerateDeck() (returns array of 52 Cards)
+(Function) ShuffleCards() (shuffles deck and returns 2D array (4 sets of 13 Cards))
+(Function) GetPlayStatus() (takes in playerCards and amount,
+returns status code (if valid, if so what type))
+(Function) HigherThanDeck() (compares playerCards with deck)
+*/

@@ -15,15 +15,22 @@ const io = new Server(server, {
     },
 });
 
-
 server.listen(5174, () => {
     console.log('server running on port 5174');
 }); 
 
+
+let games = []
+
 let activePlayers = 0;
+let myRoom = "room"; 
 
 io.on('connection', (socket) => {
     activePlayers += 1;
+    if (activePlayers % 3 != 0) {
+        socket.join(myRoom)
+    }
+    
     socket.emit("updatePlayerNumber", activePlayers); 
 
     socket.on('helloToServer', (num) => {
@@ -32,5 +39,6 @@ io.on('connection', (socket) => {
 
     socket.on('pageChange', () => {
         console.log("Page has changed.")
+        io.to("room").emit("excludeThree");
     })
 });

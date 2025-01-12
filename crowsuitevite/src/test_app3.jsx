@@ -34,6 +34,12 @@ function App3() {
       })
   }, []);
 
+  useEffect(() => {
+    socket.on('excludeThree', () => {
+        console.log("YAY"); 
+    })
+}, []);
+
     function changeGamePage() {
         let currentGamePage = gamePage; 
         currentGamePage += 1; 
