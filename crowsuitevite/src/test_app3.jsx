@@ -9,36 +9,35 @@ import TutorialPage from './pages/TutorialPage.jsx'
 import WaitingRoomPage from './pages/WaitingRoomPage.jsx'
 
 function App3() {
-    const [gamePage, setGamePage] = useState(0)
-    const [pNum, setPNum] = useState(0)
-    //const [mySocket, setSocket] = useState(null); 
+    const [gamePage, setGamePage] = useState(0);
+    const [gNum, setGNum] = useState(0); 
+    const [pNum, setPNum] = useState(0);
   
     useEffect(() => {
-      socket.on('connect', () => {
-        console.log(socket.id)
-        console.log("CLIENT CONNECTED.")
-       // setSocket(socket); 
-      });
+        socket.on('connect', () => {
+            console.log(socket.id)
+            console.log("CLIENT CONNECTED.")
+        });
   
-      return(() => {
-        socket.off('connect', () => {
-            console.log("CLIENT DISCONNECTED.")
-        })
+        return(() => {
+            socket.off('connect', () => {
+                console.log("CLIENT DISCONNECTED.")
+            })
         }); 
     }, []);
   
     useEffect(() => {
-      socket.on('updatePlayerNumber', (num) => {
-          console.log(`Received ${num}`); 
-          setPNum(num); 
-      })
-  }, []);
+        socket.on('addPlayerInformation', (gameNumber, playerNumber) => {
+                setGNum(gameNumber);
+                setPNum(playerNumber); 
+            console.log(`Received ${gameNumber} and ${gameNumber}`); 
+        });
 
-  useEffect(() => {
-    socket.on('excludeThree', () => {
-        console.log("YAY"); 
-    })
-}, []);
+        socket.on('readyToStart', () => {
+            setGamePage(3); 
+        })
+    }, []);
+
 
     function changeGamePage() {
         let currentGamePage = gamePage; 
@@ -46,7 +45,7 @@ function App3() {
         if (currentGamePage == 6) {
             currentGamePage = 0; 
         }
-        socket.emit('pageChange'); 
+        
         setGamePage(currentGamePage); 
     }
 
@@ -78,7 +77,7 @@ function App3() {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
+                <button onClick={() => {changeGamePage()}}>{gNum} game, button for {pNum}</button>
                 <GamePage></GamePage>
             </>
         )

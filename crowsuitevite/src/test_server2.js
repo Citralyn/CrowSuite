@@ -19,26 +19,36 @@ server.listen(5174, () => {
     console.log('server running on port 5174');
 }); 
 
+import { Game, Player } from "./helperCode/game.js"
 
+// initial game to start things off 
 let games = []
+let game1 = new Game("room1");
+games.push(game1); 
 
-let activePlayers = 0;
-let myRoom = "room"; 
+
+let totalPlayers = 0;
 
 io.on('connection', (socket) => {
-    activePlayers += 1;
-    if (activePlayers % 3 != 0) {
-        socket.join(myRoom)
+    totalPlayers += 1;
+
+    // check if latest room is full
+    let currentGame = games[games.length - 1]; 
+
+    // room is full? send players to a new game
+    if (currentGame.readyToStart == true) {
+        io.to(currentGame.gameRoom).emit("readyToStart");
+
+        let newGameRoom = "room" + games.length + 1; 
+        let newGame = new Game(newGameRoom, games.length);
+        games.push(newGame);
     }
-    
-    socket.emit("updatePlayerNumber", activePlayers); 
 
-    socket.on('helloToServer', (num) => {
-        console.log(`received ${num} from client`); 
-    })
+    currentGame = games[games.length - 1]; 
 
-    socket.on('pageChange', () => {
-        console.log("Page has changed.")
-        io.to("room").emit("excludeThree");
-    })
+    let newPlayer = new Player();
+    currentGame.addPlayer(newPlayer); 
+    socket.join(currentGame.gameRoom); 
+    socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+
 });
