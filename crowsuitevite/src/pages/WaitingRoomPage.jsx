@@ -24,14 +24,14 @@ export default function WaitingRoomPage({playerSocket, gameNumber}) {
     return(
       <div className="waitingMessage">
         <h1>4/4 Players Joined</h1>
-        <h2 className="validStartButton" onClick={() => {startGame()}}>START</h2>
+        <button class="btn btn-primary" onClick={() => {startGame()}}>START</button>
       </div>
     )
   } else {
     return(
       <div className="waitingMessage">
         <h1>{numberOfPlayersJoined}/4 Players Joined</h1>
-        <h2 className="invalidStartButton">START</h2>
+        <button class="btn btn-primary" disabled>START</button>
       </div>
     )
   }
