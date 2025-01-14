@@ -33,7 +33,7 @@ function App3() {
             console.log(`Received ${gameNumber} and ${playerNumber}`); 
         });
 
-        socket.on('readyToStart', () => {
+        socket.on('startGame', () => {
             setGamePage(3); 
         })
     }, []);
@@ -64,7 +64,7 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
-                <WaitingRoomPage></WaitingRoomPage>
+                <WaitingRoomPage playerSocket={socket} gameNumber={gNum}></WaitingRoomPage>
             </>
         )
     } else if (gamePage == 3) {

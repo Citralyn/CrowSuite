@@ -31,15 +31,30 @@ let totalPlayers = 0;
 
 io.on('connection', (socket) => {
     
-
     socket.on("addNewPlayer", (username) => {
         totalPlayers += 1;
 
-        // check if latest room is full
         let currentGame = games[games.length - 1]; 
 
-        // room is full? send players to a new game
+        let newPlayer = new Player(username);
+        currentGame.addPlayer(newPlayer); 
+        socket.join(currentGame.gameRoom); 
+        socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+        io.to(currentGame.gameRoom).emit("addToPlayersJoined", newPlayer.playerNumber)
+
+        // room is full?
+        // send ready alert and add new game for next set of players
         if (currentGame.readyToStart == true) {
+            //testing purposes:
+
+            console.log(`
+                1 ${currentGame.player1.username},
+                2 ${currentGame.player2.username},
+                3 ${currentGame.player3.username},
+                4 ${currentGame.player4.username}`)
+            
+            // end of test segment
+            
             console.log(`${currentGame.gameRoom} is ready to start`);
             io.to(currentGame.gameRoom).emit("readyToStart");
 
@@ -47,12 +62,10 @@ io.on('connection', (socket) => {
             let newGame = new Game(newGameRoom, games.length + 1);
             games.push(newGame);
         }
+    })
 
-        currentGame = games[games.length - 1]; 
-
-        let newPlayer = new Player(username);
-        currentGame.addPlayer(newPlayer); 
-        socket.join(currentGame.gameRoom); 
-        socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+    socket.on("gameCanStart", (gameNum) => {
+        let requestedGameRoom = games[gameNum - 1].gameRoom; 
+        io.to(requestedGameRoom).emit("startGame");
     })
 });

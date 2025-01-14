@@ -4,3 +4,16 @@
     display: flex;
 }
 
+.waitingMessage {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.validStartButton {
+    background-color: blue;
+}
+
+.invalidStartButton {
+    background-color: grey;
+}
