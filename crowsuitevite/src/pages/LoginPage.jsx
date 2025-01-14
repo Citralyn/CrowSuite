@@ -1,14 +1,24 @@
-export default function LoginPage({playerSocket, playerNumber}) { 
+import { useState } from 'react'
 
-  function sayHi() {
-    console.log(playerSocket.id)
-    playerSocket.emit('helloToServer', playerNumber);
+export default function LoginPage({playerSocket, changePageFunction}) { 
+  const [username, setUsername] = useState(""); 
+
+  function update(user) {
+    playerSocket.emit('addNewPlayer', user);
+    changePageFunction(2); 
   }
 
   return (
     <>
       <h1>LOGIN PAGE</h1>
-      <button onClick={() => {sayHi()}}>Message</button>
+
+        <label>
+          <p>Username</p>
+          <input id="username" type="text" placeholder="John Smith" onChange={e => setUsername(e.target.value)}/>
+        </label>
+        <div>
+          <button type="submit" onClick={() => {update(username)}}>Enter</button>
+        </div>
     </>
   );
 }; 

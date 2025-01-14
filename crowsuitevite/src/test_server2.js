@@ -23,32 +23,36 @@ import { Game, Player } from "./helperCode/game.js"
 
 // initial game to start things off 
 let games = []
-let game1 = new Game("room1");
+let game1 = new Game("room1", 1);
 games.push(game1); 
 
 
 let totalPlayers = 0;
 
 io.on('connection', (socket) => {
-    totalPlayers += 1;
+    
 
-    // check if latest room is full
-    let currentGame = games[games.length - 1]; 
+    socket.on("addNewPlayer", (username) => {
+        totalPlayers += 1;
 
-    // room is full? send players to a new game
-    if (currentGame.readyToStart == true) {
-        io.to(currentGame.gameRoom).emit("readyToStart");
+        // check if latest room is full
+        let currentGame = games[games.length - 1]; 
 
-        let newGameRoom = "room" + games.length + 1; 
-        let newGame = new Game(newGameRoom, games.length);
-        games.push(newGame);
-    }
+        // room is full? send players to a new game
+        if (currentGame.readyToStart == true) {
+            console.log(`${currentGame.gameRoom} is ready to start`);
+            io.to(currentGame.gameRoom).emit("readyToStart");
 
-    currentGame = games[games.length - 1]; 
+            let newGameRoom = "room" + (games.length + 1); 
+            let newGame = new Game(newGameRoom, games.length + 1);
+            games.push(newGame);
+        }
 
-    let newPlayer = new Player();
-    currentGame.addPlayer(newPlayer); 
-    socket.join(currentGame.gameRoom); 
-    socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+        currentGame = games[games.length - 1]; 
 
+        let newPlayer = new Player(username);
+        currentGame.addPlayer(newPlayer); 
+        socket.join(currentGame.gameRoom); 
+        socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+    })
 });

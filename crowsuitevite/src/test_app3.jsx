@@ -28,9 +28,9 @@ function App3() {
   
     useEffect(() => {
         socket.on('addPlayerInformation', (gameNumber, playerNumber) => {
-                setGNum(gameNumber);
-                setPNum(playerNumber); 
-            console.log(`Received ${gameNumber} and ${gameNumber}`); 
+            setGNum(gameNumber);
+            setPNum(playerNumber); 
+            console.log(`Received ${gameNumber} and ${playerNumber}`); 
         });
 
         socket.on('readyToStart', () => {
@@ -39,37 +39,31 @@ function App3() {
     }, []);
 
 
-    function changeGamePage() {
-        let currentGamePage = gamePage; 
-        currentGamePage += 1; 
-        if (currentGamePage == 6) {
-            currentGamePage = 0; 
-        }
-        
-        setGamePage(currentGamePage); 
+    function changeGamePage(i) {
+        setGamePage(i); 
     }
 
     if (gamePage == 0) {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <FrontPage></FrontPage>
+                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <FrontPage changePageFunction={changeGamePage}></FrontPage>
             </>
         )
     } else if (gamePage == 1) {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
-                <LoginPage playerSocket={socket} playerNumber={pNum}></LoginPage>
+                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <LoginPage playerSocket={socket} changePageFunction={changeGamePage}></LoginPage>
             </>
         )
     } else if (gamePage == 2) {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
+                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
                 <WaitingRoomPage></WaitingRoomPage>
             </>
         )
@@ -77,7 +71,7 @@ function App3() {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>{gNum} game, button for {pNum}</button>
+                <button onClick={() => {changeGamePage(gamePage + 1)}}>{gNum} game, button for {pNum}</button>
                 <GamePage></GamePage>
             </>
         )
@@ -86,7 +80,7 @@ function App3() {
             
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
+                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
                 <ResultsPage></ResultsPage>
             </>
         )
@@ -94,7 +88,7 @@ function App3() {
         return(
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage()}}>button for {pNum}</button>
+                <button onClick={() => {changeGamePage(0)}}>button for {pNum}</button>
                 <TutorialPage></TutorialPage>
             </>
         )

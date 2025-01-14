@@ -47,13 +47,14 @@ class Game {
     }
 
     dealCards() {
-        let cards = shuffleCards(generateDeck()); 
-        this.cards = cards; 
+        let newCards = generateDeck(); 
+        shuffleCards(newCards); 
+        this.cards = newCards;
 
-        this.player1.playerCards = this.cards[0];
-        this.player2.playerCards = this.cards[1];
-        this.player3.playerCards = this.cards[2];
-        this.player4.playerCards = this.cards[3];
+        this.player1.playerCards = newCards.slice(0, 13);
+        this.player2.playerCards = newCards.slice(13, 26); 
+        this.player3.playerCards = newCards.slice(26, 39); 
+        this.player4.playerCards = newCards.slice(39, 52);
     }
 
 }
@@ -69,7 +70,8 @@ class Player {
     playerCards;
     numberOfCards = 13; 
 
-    constructor() {
+    constructor(username) {
+        this.username = username; 
         this.online = true; 
     }
 }
