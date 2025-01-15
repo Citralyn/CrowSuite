@@ -1,5 +1,13 @@
+import './Components.css'
+import crowLogo from '../assets/crow.svg'
+
 export default function Header() {
       return (
-        <h1>Header</h1>
+        <>
+        <div className="header">
+          <h1>Crowsuite Header</h1>
+          <img src={crowLogo}></img>
+        </div>
+        </>
       );
     }; 

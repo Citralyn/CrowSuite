@@ -1,13 +1,48 @@
+* {
+    width: 100%;
+}
+
 .frontPageButtons {
+    background-color: blueviolet;
     align-items: center;
     justify-content: center;
     display: flex;
+    gap: 5%;
+}
+
+.frontPageButtons > button {
+    width: 10%;
+}
+
+.loginPage {
+    background-color: lightsalmon;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.loginPage > input {
+    width: 20%;
+}
+
+.loginPage > button {
+    width: 20%;
 }
 
 .waitingMessage {
+    background-color: lightcyan;
     align-items: center;
-    justify-content: center;
     display: flex;
+    flex-direction: column;
+}
+
+.waitingMessage > h1 {
+    text-align: center;
+}
+
+.waitingMessage > button {
+    width: 10%; 
 }
 
 .validStartButton {
@@ -17,3 +52,41 @@
 .invalidStartButton {
     background-color: grey;
 }
+
+.generalFlexContainer {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.staticGameContent {  
+    display: grid;
+    grid-template-columns: 1fr 100px 100px 100px 100px 100px 100px 100px 1fr; /* Fixed width for the first column, flexible columns for the others */
+    grid-template-rows: 100px 100px 100px 100px 100px; /* First row is 100px, second row is 200px */
+    gap: 2%;
+  }
+  
+  .Deck { 
+    background-color: red;
+    grid-column: 3 / 8; /* Start at column 1, end at column 2 */
+    grid-row: 2 / 5; /* Place in row 1 */
+    }
+  
+  .TopPlayer { 
+    background-color: blue;
+    grid-column: 5; /* Start at column 2, end at column 3 */
+    grid-row: 1; /* Place in row 1 */
+    }
+  
+  .LeftPlayer { 
+    background-color: green;
+    grid-column: 2; /* Span columns 1 and 2 */
+    grid-row: 3; /* Place in row 2 */
+    }
+  
+  .RightPlayer { 
+    background-color: yellow;
+    grid-column: 8; /* Span columns 1 and 2 */
+    grid-row: 3; /* Place in row 2 */
+    }
+  

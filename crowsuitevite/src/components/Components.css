@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@300..700&display=swap');
+
+.header {
+    justify-content: center;
+    display: flex;
+    text-align: center;
+    font-family: "Jura"; 
+}
+
+.header > h1 {
+    width: 25%;
+}
+.header > img {
+    width: 5%;
+}
+
+.footer {
+    text-align: center;
+}

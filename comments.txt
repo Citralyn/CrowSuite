@@ -115,3 +115,5 @@ HelperFunctions
 returns status code (if valid, if so what type))
 (Function) HigherThanDeck() (compares playerCards with deck)
 */
+
+Note-> delete later add google fonts
