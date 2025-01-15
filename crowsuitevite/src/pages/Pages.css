@@ -89,4 +89,32 @@
     grid-column: 8; /* Span columns 1 and 2 */
     grid-row: 3; /* Place in row 2 */
     }
-  
+
+.opponent {
+    background-color: grey;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.personalizedGameContent {
+    text-align: center;
+    background-color: orange;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.personalizedGameContent > .playerStats {
+    background-color: red;
+}
+
+.personalizedGameContent > .playOrPass {
+    background-color: purple;
+    display: flex;
+    justify-content: center;
+    gap: 10%;
+}
+
+.personalizedGameContent > .playOrPass > button {
+    width: 10%;
+}

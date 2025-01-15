@@ -1,30 +1,85 @@
+import { useState, useEffect } from 'react'
 import './Pages.css'
+import personLogo from '../assets/person.svg'
 
-export default function GamePage() { return (
+export default function GamePage({playerSocket, gameNumber, playerNumber}) { 
+  const [leftPlayer, setLeft] = useState({})
+  const [topPlayer, setTop] = useState({})
+  const [rightPlayer, setRight] = useState({})
+  const [bottomPlayer, setBottom] = useState({}); 
+  
+  useEffect(() => {
+        playerSocket.emit('getOtherPlayers', gameNumber);
+
+        playerSocket.on('setUpOtherPlayers', (player1, player2, player3, player4) => {
+          console.log(player1.username)
+            if (playerNumber == 1) {
+                setLeft(player2);
+                setTop(player3);
+                setRight(player4);
+                setBottom(player1)
+            } else if (playerNumber == 2) {
+                setLeft(player1);
+                setTop(player3);
+                setRight(player4);
+                setBottom(player2)
+            } else if (playerNumber == 3) {
+              setLeft(player1);
+              setTop(player2);
+              setRight(player4);
+              setBottom(player3)
+            } else if (playerNumber == 4) {
+              setLeft(player1);
+              setTop(player2);
+              setRight(player3);
+              setBottom(player4)
+            }
+        });
+    }, []);
+  
+  return (
   <>
     <h1>GAME PAGE</h1>
     <div className="generalFlexContainer">
       <div className="staticGameContent">
         <div className="Deck">
-          <h1>asdfsdf</h1>
+          <h1>asdfsdf asdfsdf asdfsdf asdfsdf</h1>
           <h2>asdkfsd</h2>
         </div>
         <div className="TopPlayer">
-          <h1>top player</h1>
+          <div className="opponent">
+            <img src={personLogo}></img>
+            <p>{topPlayer.username}</p>
+            <p>{topPlayer.numberOfCards}</p>
+          </div>
         </div>
         <div className="LeftPlayer">
-          <h1>left player</h1>
+          <div className="opponent">
+            <img src={personLogo}></img>
+            <p>{leftPlayer.username}</p>
+            <p>{leftPlayer.numberOfCards}</p>
+          </div>
         </div>
         <div className="RightPlayer">
-        <h1>rightplayer</h1>
+          <div className="opponent">
+            <img src={personLogo}></img>
+            <p>{rightPlayer.username}</p>
+            <p>{rightPlayer.numberOfCards}</p>
+          </div>
         </div>
       </div>
     </div>
     
     <div className="personalizedGameContent">
-      <h1>Cards Go Here</h1>
+      <div className="playerStats">
+        <h1>{bottomPlayer.username}     {bottomPlayer.numberOfCards}</h1>
+      </div>
+      <h1>spot where actual cards go</h1>
+      <div className="playOrPass">
+        <button>PLAY</button>
+        <button>PASS</button>
+      </div>
     </div>
   </>
-    
   );
 }; 

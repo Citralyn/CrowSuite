@@ -72,7 +72,7 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage(gamePage + 1)}}>{gNum} game, button for {pNum}</button>
-                <GamePage></GamePage>
+                <GamePage playerSocket={socket} gameNumber={gNum} playerNumber={pNum}></GamePage>
             </>
         )
     } else if (gamePage == 4) {
