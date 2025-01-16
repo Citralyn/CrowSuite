@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+//import { useContext, createContext } from 'react';
 import { socket } from './socket.js';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import FrontPage from './pages/FrontPage.jsx'
@@ -12,6 +13,7 @@ function App3() {
     const [gamePage, setGamePage] = useState(0);
     const [gNum, setGNum] = useState(0); 
     const [pNum, setPNum] = useState(0);
+    //const SocketContext = createContext();
   
     useEffect(() => {
         socket.on('connect', () => {

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import './Pages.css'
 import personLogo from '../assets/person.svg'
+import PlayerCards from '../components/PlayerCards.jsx'
 
 export default function GamePage({playerSocket, gameNumber, playerNumber}) { 
   const [leftPlayer, setLeft] = useState({})
   const [topPlayer, setTop] = useState({})
   const [rightPlayer, setRight] = useState({})
-  const [bottomPlayer, setBottom] = useState({}); 
+  const [bottomPlayer, setBottom] = useState({})
   
   useEffect(() => {
         playerSocket.emit('getOtherPlayers', gameNumber);
@@ -74,7 +75,7 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
       <div className="playerStats">
         <h1>{bottomPlayer.username}     {bottomPlayer.numberOfCards}</h1>
       </div>
-      <h1>spot where actual cards go</h1>
+      <PlayerCards playerSocket={playerSocket} gameNumber={gameNumber} playerNumber={playerNumber}></PlayerCards>
       <div className="playOrPass">
         <button>PLAY</button>
         <button>PASS</button>

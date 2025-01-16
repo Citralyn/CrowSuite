@@ -16,6 +16,8 @@ class Game {
     player2;
     player3;
     player4;
+
+    players;
     winner = null; 
 
     constructor(gameRoom, gameNumber) {
@@ -41,6 +43,7 @@ class Game {
         newPlayer.playerNumber = this.numberActivePlayers;
 
         if (this.numberActivePlayers == 4) {
+            this.players = [this.player1, this.player2, this.player3, this.player4];
             this.readyToStart = true; 
             this.dealCards(); 
         }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import crowLogo from './assets/crow.svg'
 import { socket } from './socket.js';
 import './App.css'
-import Card from './components/Card.jsx'
+import Card from './components/OldCard.jsx'
 import SelectedCards from './components/SelectedCards.jsx'
 import Deck from './components/Deck.jsx'
 import test from 'node:test';

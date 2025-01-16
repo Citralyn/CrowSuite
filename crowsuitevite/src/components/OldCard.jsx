@@ -1,0 +1,44 @@
+import crowLogo from '../assets/crow.svg'
+import duckLogo from '../assets/duck.svg'
+import pigeonLogo from '../assets/pigeon.svg'
+import seagullLogo from '../assets/seagull.svg'
+
+import './Card.css'
+
+const image_urls = {
+  "pigeon": pigeonLogo,
+  "duck": duckLogo,
+  "seagull": seagullLogo,
+  "crow": crowLogo
+}
+
+export default function OldCard({cardFunc, index, card_to_display, heldCards, usedCards}) {
+  console.log(card_to_display)
+
+  function handleClick(i) {
+    cardFunc(i);
+  }
+
+  if (card_to_display == undefined) {
+    return;
+  } else {
+    let value = card_to_display.value; 
+    let number = card_to_display.number;
+    let suit = card_to_display.suit;
+    console.log(`${value}, ${number}, ${suit}`)
+
+    if (usedCards[index] == true || heldCards[index] == true) {
+      return;
+    } else {
+      return (
+        <div className="playerCard" onClick={() => {handleClick(index)}}>
+          <h1>{number} of {suit}s</h1>
+          <img
+          src={image_urls[suit]}
+        />
+        </div>
+      );
+    }
+  }
+
+}; 

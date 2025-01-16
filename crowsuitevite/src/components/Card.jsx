@@ -3,6 +3,8 @@ import duckLogo from '../assets/duck.svg'
 import pigeonLogo from '../assets/pigeon.svg'
 import seagullLogo from '../assets/seagull.svg'
 
+import { useState, useEffect } from 'react'
+
 import './Card.css'
 
 const image_urls = {
@@ -12,33 +14,53 @@ const image_urls = {
   "crow": crowLogo
 }
 
-export default function Card({cardFunc, index, card_to_display, heldCards, usedCards}) {
-  console.log(card_to_display)
+// imports here
 
-  function handleClick(i) {
-    cardFunc(i);
-  }
+const image_urls2 = [
+    [
+//pigeons
+    ],
+    [
+//ducks
+    ],
+    [
+//seagulls
+    ],
+    [
+//crows
+    ]
+]
 
-  if (card_to_display == undefined) {
-    return;
-  } else {
-    let value = card_to_display.value; 
-    let number = card_to_display.number;
-    let suit = card_to_display.suit;
-    console.log(`${value}, ${number}, ${suit}`)
+export default function Card({index, value, cardFunction, cardType, heldCards}) {
+    console.log(`${index}, ${value}, ${cardType}, ${location}`)
+    let cardNumber = Math.floor(value.value / 4);
+    let cardSuit = (value.value - 1) % 4; 
+    let newLocation = 0;
 
-    if (usedCards[index] == true || heldCards[index] == true) {
-      return;
-    } else {
-      return (
-        <div className="playerCard" onClick={() => {handleClick(index)}}>
-          <h1>{number} of {suit}s</h1>
-          <img
-          src={image_urls[suit]}
-        />
-        </div>
-      );
+    //let image_url = image_urls2[cardSuit][cardNumber];
+
+    function handleClick(i) {
+        cardFunction(i);
+        
+        if (cardType == 0) {
+            newLocation = 1;
+        } else {
+            newLocation = 0;
+        }
     }
-  }
 
-}; 
+    if ((cardType == 0 && heldCards[index] == false) ||
+    (cardType == 1 && heldCards[index] == true)) {
+        return(
+            <>
+            <div className="playerCard" onClick={() => {handleClick(index)}}>
+              <h1>{cardNumber} of {cardSuit}s</h1>
+            </div>
+            </>
+        )
+    } else {
+        return(
+            <></>
+        )
+    }
+};

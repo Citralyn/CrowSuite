@@ -76,4 +76,10 @@ io.on('connection', (socket) => {
         io.to(requestedGameRoom).emit("setUpOtherPlayers",
             currentGame.player1, currentGame.player2, currentGame.player3, currentGame.player4);
     })
+
+    socket.on("getCards", (gameNum, playerNum) => {
+        let currentGame = games[gameNum - 1];
+        let requestedCards = currentGame.players[playerNum - 1].playerCards;
+        socket.emit("receiveCards", requestedCards);
+    })
 });
