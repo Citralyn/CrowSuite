@@ -93,10 +93,10 @@ function getPlayType(playerCards, numCards) {
       } 
       
     } else {
-      return -1; 
+      return -10; 
     }
     
-    return -1; 
+    return -10; 
 
 }
 
@@ -241,3 +241,6 @@ function higherThanDeck(playerCards, deckCards, numCards) {
     }
   }
 }
+
+
+export { getPlayType, higherThanDeck };

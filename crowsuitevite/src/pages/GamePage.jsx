@@ -2,18 +2,25 @@ import { useState, useEffect } from 'react'
 import './Pages.css'
 import personLogo from '../assets/person.svg'
 import PlayerCards from '../components/PlayerCards.jsx'
+import DeckCards from '../components/DeckCards.jsx'
 
 export default function GamePage({playerSocket, gameNumber, playerNumber}) { 
+  const [currentPlayer, setCurrent] = useState("");
+
   const [leftPlayer, setLeft] = useState({})
   const [topPlayer, setTop] = useState({})
   const [rightPlayer, setRight] = useState({})
   const [bottomPlayer, setBottom] = useState({})
   
   useEffect(() => {
-        playerSocket.emit('getOtherPlayers', gameNumber);
+        playerSocket.emit('getGameBoard', gameNumber);
 
-        playerSocket.on('setUpOtherPlayers', (player1, player2, player3, player4) => {
-          console.log(player1.username)
+        playerSocket.on('updateGameBoard', (players, playerTurn) => {
+          let player1 = players[0]
+          let player2 = players[1]
+          let player3 = players[2]
+          let player4 = players[3]
+
             if (playerNumber == 1) {
                 setLeft(player2);
                 setTop(player3);
@@ -35,17 +42,24 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
               setRight(player3);
               setBottom(player4)
             }
+
+            let currentPlayer = players[playerTurn - 1];
+            setCurrent(currentPlayer.username); 
+        });
+
+        playerSocket.on("gameOver", () => {
+          alert("GAME OVER"); 
         });
     }, []);
   
   return (
   <>
     <h1>GAME PAGE</h1>
+    <h1>{currentPlayer}</h1>
     <div className="generalFlexContainer">
       <div className="staticGameContent">
         <div className="Deck">
-          <h1>asdfsdf asdfsdf asdfsdf asdfsdf</h1>
-          <h2>asdkfsd</h2>
+          <DeckCards playerSocket={playerSocket} gameNumber={gameNumber}></DeckCards>
         </div>
         <div className="TopPlayer">
           <div className="opponent">
@@ -73,13 +87,11 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
     
     <div className="personalizedGameContent">
       <div className="playerStats">
-        <h1>{bottomPlayer.username}     {bottomPlayer.numberOfCards}</h1>
+        <hr></hr>
+        <h1>Player: {bottomPlayer.username}          Amount of Cards: {bottomPlayer.numberOfCards}</h1>
+        <hr></hr>
       </div>
       <PlayerCards playerSocket={playerSocket} gameNumber={gameNumber} playerNumber={playerNumber}></PlayerCards>
-      <div className="playOrPass">
-        <button>PLAY</button>
-        <button>PASS</button>
-      </div>
     </div>
   </>
   );

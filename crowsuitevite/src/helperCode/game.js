@@ -6,19 +6,20 @@ class Game {
     numberActivePlayers = 0; 
     readyToStart = false; 
 
-    roundAmountOfCards;
-    currentPlayerTurn;
-    numberOfPasses;
-    cards;
-    cardsInDeck;
+    roundAmountOfCards = 0; 
+    currentPlayerTurn = 1; 
+    numberOfPasses = 0; 
+    cards = []; 
+    cardsInDeck = []; 
 
     player1;
     player2;
     player3;
     player4;
-
     players;
-    winner = null; 
+
+    winner = null;
+    gameOver = false;  
 
     constructor(gameRoom, gameNumber) {
         this.gameRoom = gameRoom; 
@@ -55,9 +56,49 @@ class Game {
         this.cards = newCards;
 
         this.player1.playerCards = newCards.slice(0, 13);
+        this.player1.playerCards.sort((a, b) => (a.value - b.value));
+
         this.player2.playerCards = newCards.slice(13, 26); 
+        this.player2.playerCards.sort((a, b) => (a.value - b.value));
+
         this.player3.playerCards = newCards.slice(26, 39); 
+        this.player3.playerCards.sort((a, b) => (a.value - b.value));
+
         this.player4.playerCards = newCards.slice(39, 52);
+        this.player4.playerCards.sort((a, b) => (a.value - b.value));
+    }
+
+    playCards(playerNumber, attemptingToPlay, numberOfCards) {
+        this.numberOfPasses = 0;
+
+        this.currentPlayerTurn += 1;
+        if (this.currentPlayerTurn >= 5) {
+            this.currentPlayerTurn = 1;
+        }
+
+        this.players[playerNumber - 1].numberOfCards -= numberOfCards;
+        this.cardsInDeck = attemptingToPlay; 
+        this.roundAmountOfCards = numberOfCards; 
+
+        if (this.players[playerNumber - 1].numberOfCards == 0) {
+            this.gameOver = true;
+            this.winner = true; 
+        }
+    }
+
+    pass() {
+        this.numberOfPasses += 1; 
+
+        this.currentPlayerTurn += 1;
+        if (this.currentPlayerTurn >= 5) {
+            this.currentPlayerTurn = 1;
+        }
+
+        if (this.numberOfPasses == 3) {
+            this.numberOfPasses = 0; 
+            this.roundAmountOfCards = 0; 
+            this.cardsInDeck = [];
+        }
     }
 
 }

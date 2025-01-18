@@ -20,6 +20,7 @@ server.listen(5174, () => {
 }); 
 
 import { Game, Player } from "./helperCode/game.js"
+import { getPlayType, higherThanDeck } from "./helperCode/validation.js"
 
 // initial game to start things off 
 let games = []
@@ -70,16 +71,104 @@ io.on('connection', (socket) => {
         io.to(requestedGameRoom).emit("startGame");
     })
 
-    socket.on("getOtherPlayers", (gameNum) => {
-        let currentGame = games[gameNum - 1];
-        let requestedGameRoom = currentGame.gameRoom; 
-        io.to(requestedGameRoom).emit("setUpOtherPlayers",
-            currentGame.player1, currentGame.player2, currentGame.player3, currentGame.player4);
-    })
-
     socket.on("getCards", (gameNum, playerNum) => {
         let currentGame = games[gameNum - 1];
         let requestedCards = currentGame.players[playerNum - 1].playerCards;
         socket.emit("receiveCards", requestedCards);
+    });
+
+    socket.on("getDeck", (gameNum) => {
+        let currentGame = games[gameNum - 1];
+        socket.emit("updateDeck", currentGame.players, currentGame.currentPlayerTurn);
+    });
+
+    socket.on("getGameBoard", (gameNum) => {
+        let currentGame = games[gameNum - 1];
+        socket.emit("updateGameBoard",currentGame.players, currentGame.currentPlayerTurn);
+    });
+
+    socket.on("attemptToPass", (gameNum, playerNum) => {
+        let currentGame = games[gameNum - 1];
+        let requestedGameRoom = currentGame.gameRoom;
+        let roundAmount = currentGame.roundAmountOfCards;
+        let playerTurn = currentGame.currentPlayerTurn; 
+
+        if (playerNum == playerTurn) {
+            if (roundAmount == 0) {
+                socket.emit("invalidPassOnStart");
+            } else {
+                currentGame.pass(); 
+                let currentDeckCards = currentGame.cardsInDeck;
+                io.to(requestedGameRoom).emit("updateDeck", currentDeckCards);
+                playerTurn = currentGame.currentPlayerTurn; 
+                let players = currentGame.players; 
+                io.to(requestedGameRoom).emit("updateGameBoard", players, playerTurn);
+            }
+        } else {
+            socket.emit("notYourTurn"); 
+        }
+    }); 
+
+    socket.on("attemptToPlay", (gameNum, playerNum, heldCards) => {
+        let currentGame = games[gameNum - 1];
+        let requestedGameRoom = currentGame.gameRoom;
+        let playerTurn = currentGame.currentPlayerTurn; 
+        let playerCards = currentGame.players[playerNum - 1].playerCards;
+        let roundAmount = currentGame.roundAmountOfCards;
+        let currentDeckCards = currentGame.cardsInDeck;
+        let players = currentGame.players;
+
+        if (playerNum == playerTurn) {
+            let attemptingToPlay = []; 
+            for (let i = 0; i < 13; i++) {
+                if (heldCards[i] == true) {
+                    attemptingToPlay.push(playerCards[i]);
+                }
+            }
+
+            let numberOfCards = attemptingToPlay.length;
+            
+
+            let playType = getPlayType(attemptingToPlay, numberOfCards);
+            if (playType == -10) {
+                socket.emit("invalidAmount");
+            } else if (playType == -1) {
+                socket.emit("invalidCombination");
+            } else {
+                roundAmount = currentGame.roundAmountOfCards;
+                if (roundAmount == 0) {
+                    currentGame.playCards(playerNum, attemptingToPlay, numberOfCards); 
+                    players = currentGame.players;
+                    playerTurn = currentGame.currentPlayerTurn; 
+                    io.to(requestedGameRoom).emit("updateGameBoard", players, playerTurn);
+                    currentDeckCards = currentGame.cardsInDeck;
+                    io.to(requestedGameRoom).emit("updateDeck", currentDeckCards);
+                    io.to(requestedGameRoom).emit("updatePlayerUsed", currentDeckCards);
+                } else {
+                    if (numberOfCards == roundAmount) {
+                        if (higherThanDeck(attemptingToPlay, currentDeckCards, numberOfCards)) {
+                            currentGame.playCards(playerNum, attemptingToPlay, numberOfCards); 
+                            players = currentGame.players;
+                            playerTurn = currentGame.currentPlayerTurn; 
+                            io.to(requestedGameRoom).emit("updateGameBoard", players, playerTurn);
+                            currentDeckCards = currentGame.cardsInDeck;
+                            io.to(requestedGameRoom).emit("updateDeck", currentDeckCards);
+                            io.to(requestedGameRoom).emit("updatePlayerUsed", currentDeckCards);
+                            if (currentGame.gameOver) {
+                                setTimeout(() => {
+                                    io.to(requestedGameRoom).emit("gameOver"); 
+                                }, 1000); 
+                            }
+                        } else {
+                            socket.emit("notHigherThanDeck")
+                        }
+                    } else {
+                        socket.emit("wrongAmount"); 
+                    }
+                }
+            }
+        } else {
+            socket.emit("notYourTurn")
+        }
     })
 });

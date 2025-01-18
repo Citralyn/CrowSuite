@@ -31,30 +31,54 @@ const image_urls2 = [
     ]
 ]
 
-export default function Card({index, value, cardFunction, cardType, heldCards}) {
-    console.log(`${index}, ${value}, ${cardType}, ${location}`)
-    let cardNumber = Math.floor(value.value / 4);
-    let cardSuit = (value.value - 1) % 4; 
-    let newLocation = 0;
+export default function Card({playerSocket, index, card, cardType, heldCards, setHeld}) {
+    const [usedCards, setUsed] = useState(
+        [false, false, false, false, false, false, false,
+          false, false, false, false, false, false
+        ]
+    )
 
     //let image_url = image_urls2[cardSuit][cardNumber];
 
+    useEffect(() => {
+        playerSocket.on('updatePlayerUsed', () => {
+            let currentlyHeldCards = [...heldCards]; 
+            let currentlyUsedCards = [...usedCards];
+  
+            for (let i = 0; i < 13; i++) {
+              if (currentlyHeldCards[i] == true) {
+                currentlyUsedCards[i] = true;
+              }
+              currentlyHeldCards[i] = false;
+            }
+  
+            setHeld(currentlyHeldCards);
+            setUsed(currentlyUsedCards);
+          })
+        }); 
+
     function handleClick(i) {
-        cardFunction(i);
-        
+        let currentlyHeldCards = [...heldCards]; 
         if (cardType == 0) {
-            newLocation = 1;
+            console.log(`Selecting ${i}`)
+            currentlyHeldCards[i] = true;
         } else {
-            newLocation = 0;
+            console.log(`Deselecting ${i}`)
+            currentlyHeldCards[i] = false;
         }
+        setHeld(currentlyHeldCards); 
     }
 
-    if ((cardType == 0 && heldCards[index] == false) ||
-    (cardType == 1 && heldCards[index] == true)) {
+    if (usedCards[index] == true) {
+        console.log("used"); 
+        return;
+    } else if ((cardType == 0 && heldCards[index] == false) ||
+    (cardType == 1 && heldCards[index] == true)) { 
+        console.log("not used")
         return(
             <>
             <div className="playerCard" onClick={() => {handleClick(index)}}>
-              <h1>{cardNumber} of {cardSuit}s</h1>
+              <h1>{card.number} of {card.suit}s</h1>
             </div>
             </>
         )

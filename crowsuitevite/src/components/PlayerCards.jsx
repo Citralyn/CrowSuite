@@ -1,26 +1,20 @@
 import { useState, useEffect } from 'react'
-//import { useSocket } from '../pages/GamePage.jsx'
 import Card from './Card.jsx'
 import './Components.css'
 
 export default function PlayerCards({playerSocket, gameNumber, playerNumber}) {
-    const [location, setLocation] = useState(0); 
-  
-    const [playerCards, setPlayerCards] = useState(
-      [false, false, false, false, false, false, false,
-        false, false, false, false, false, false
-      ]);
+  const [playerCards, setPlayerCards] = useState(
+    [false, false, false, false, false, false, false,
+      false, false, false, false, false, false
+    ]);
 
-    const [usedCards, updateUsedCards] = useState(
+      
+    const [heldCards, setHeld] = useState(
       [false, false, false, false, false, false, false,
         false, false, false, false, false, false
       ]
     )
-    const [cardsInHand, updateCardsInHand] = useState(
-      [false, false, false, false, false, false, false,
-        false, false, false, false, false, false
-      ]
-    )
+
 
     useEffect(() => {
         playerSocket.emit('getCards', gameNumber, playerNumber);
@@ -30,22 +24,13 @@ export default function PlayerCards({playerSocket, gameNumber, playerNumber}) {
         })
     }, []);
 
-  //just a check for used needed
 
-    function selectCard(i) {
-        console.log(`Selecting ${i}`)
-        let currentlyHeldCards = cardsInHand;
-        currentlyHeldCards[i] = true;
-        updateCardsInHand(currentlyHeldCards); 
-        setLocation(1);
+    function play() {
+        playerSocket.emit('attemptToPlay', gameNumber, playerNumber, heldCards);
     }
 
-    function deselectCard(i) {
-        console.log(`Deselecting ${i}`)
-        let currentlyHeldCards = cardsInHand;
-        currentlyHeldCards[i] = false;
-        updateCardsInHand(currentlyHeldCards); 
-        setLocation(0); 
+    function pass() {
+        playerSocket.emit('attemptToPass', gameNumber, playerNumber);
     }
 
     return (
@@ -53,11 +38,12 @@ export default function PlayerCards({playerSocket, gameNumber, playerNumber}) {
             <div className="playerCards">
                 {Array.from({ length: 13 }, (_, i) => (
                     <Card 
+                        playerSocket={playerSocket}
                         index={i}
-                        value={playerCards[i]}
-                        cardFunction={selectCard} 
+                        card={playerCards[i]}
                         cardType={0}
-                        heldCards={cardsInHand}
+                        heldCards={heldCards}
+                        setHeld={setHeld}
                     />
                 ))}
             </div>
@@ -67,13 +53,21 @@ export default function PlayerCards({playerSocket, gameNumber, playerNumber}) {
             <div className="heldCards">
                 {Array.from({ length: 13 }, (_, i) => (
                     <Card 
+                        playerSocket={playerSocket}
                         index={i}
-                        value={playerCards[i]}
-                        cardFunction={deselectCard} 
+                        card={playerCards[i]}
                         cardType={1}
-                        heldCards={cardsInHand}
+                        heldCards={heldCards}
+                        setHeld={setHeld}
                     />
                 ))}
+            </div>
+
+            <hr></hr>
+
+            <div className="playOrPass">
+                <button onClick={() => {play()}}> PLAY </button>
+                <button onClick={() => {pass()}}> PASS </button>
             </div>
         </div>
       );
