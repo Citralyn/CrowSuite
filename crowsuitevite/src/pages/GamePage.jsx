@@ -47,10 +47,9 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
             setCurrent(currentPlayer.username); 
         });
 
-        playerSocket.on("gameOver", () => {
-          alert("GAME OVER"); 
-        });
     }, []);
+
+
   
   return (
   <>

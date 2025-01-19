@@ -40,6 +40,46 @@ function App3() {
         })
     }, []);
 
+    useEffect(() => {
+        socket.on("invalidPassOnStart", () => {
+            alert("invalidPassOnStart"); 
+        });
+    
+        socket.on("notYourTurn", () => {
+            alert("notYourTurn"); 
+        });
+    
+        socket.on("invalidAmount", () => {
+            alert("invalidAmount"); 
+        });
+    
+        socket.on("invalidCombination", () => {
+            alert("invalidCombination"); 
+        });
+    
+        socket.on("notHigherThanDeck", () => {
+            alert("notHigherThanDeck"); 
+        });
+    
+        socket.on("wrongAmount", () => {
+            alert("wrongAmount"); 
+        });
+    
+        socket.on("gameOver", (winner) => {
+            alert(`gameOver, ${winner} won!`); 
+        });
+
+        return () => {
+            socket.off("invalidPassOnStart");
+            socket.off("notYourTurn");
+            socket.off("invalidAmount");
+            socket.off("invalidCombination");
+            socket.off("notHigherThanDeck");
+            socket.off("wrongAmount");
+            socket.off("gameOver");
+        };
+
+    }, []);
 
     function changeGamePage(i) {
         setGamePage(i); 

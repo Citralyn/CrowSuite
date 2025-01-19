@@ -80,9 +80,13 @@ class Game {
         this.cardsInDeck = attemptingToPlay; 
         this.roundAmountOfCards = numberOfCards; 
 
+        console.log(`Current player ${this.players[playerNumber - 1].username}
+            has ${this.players[playerNumber - 1].numberOfCards}!`); 
+
         if (this.players[playerNumber - 1].numberOfCards == 0) {
             this.gameOver = true;
-            this.winner = true; 
+            this.winner = players[playerNumber - 1]; 
+            console.log(`GAME OVER -> ${this.gameOver}`);
         }
     }
 
