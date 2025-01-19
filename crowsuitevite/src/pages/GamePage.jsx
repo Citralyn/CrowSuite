@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import './Pages.css'
+import '../css/Pages.css'
 import personLogo from '../assets/person.svg'
 import PlayerCards from '../components/PlayerCards.jsx'
 import DeckCards from '../components/DeckCards.jsx'

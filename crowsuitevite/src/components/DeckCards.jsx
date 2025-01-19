@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import Card from './Card.jsx'
 import DeckCard from './DeckCard.jsx';
-import './Components.css'
+import '../css/Components.css'
 
 export default function DeckCards({playerSocket, gameNumber}) {
     const [deck, setDeck] = useState([]); 

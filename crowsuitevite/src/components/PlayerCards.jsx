@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Card from './Card.jsx'
-import './Components.css'
+import '../css/Components.css'
 
 export default function PlayerCards({playerSocket, gameNumber, playerNumber}) {
   const [playerCards, setPlayerCards] = useState(

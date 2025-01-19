@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-import './Card.css'
+import '../css/Components.css'
 
 
 // imports here

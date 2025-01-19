@@ -5,7 +5,7 @@ import seagullLogo from '../assets/seagull.svg'
 
 import { useState, useEffect } from 'react'
 
-import './Card.css'
+import '../css/Components.css'
 
 const image_urls = {
   "pigeon": pigeonLogo,

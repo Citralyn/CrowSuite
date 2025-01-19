@@ -1,4 +1,4 @@
-import './Pages.css'
+import '../css/Pages.css'
 
 export default function FrontPage({changePageFunction}) { 
 

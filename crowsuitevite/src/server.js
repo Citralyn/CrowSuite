@@ -15,459 +15,160 @@ const io = new Server(server, {
     },
 });
 
-
 server.listen(5174, () => {
     console.log('server running on port 5174');
 }); 
 
+import { Game, Player } from "./helperCode/game.js"
+import { getPlayType, higherThanDeck } from "./helperCode/validation.js"
 
-// game preparation
+// initial game to start things off 
+let games = []
+let game1 = new Game("room1", 1);
+games.push(game1); 
 
-let cards = [];
-let birds = ["pigeon", "duck", "seagull", "crow"];
 
-function shuffleCards(given_cards) {
-  let c = given_cards.length;
-
-  while (c != 0) {
-    let r = Math.floor(Math.random() * c);
-    c--; 
-
-    [given_cards[c], given_cards[r]] = [given_cards[r], given_cards[c]];
-  }
-}
-
-let card_index = 1; 
-for (let i = 1; i <= 13; i++) {
-for (let j = 0; j < 4; j++) {
-    let card = {}; 
-    card.value = card_index;
-    card.number = i;
-    card.suit = birds[j]; 
-    cards.push(card); 
-
-    card_index += 1;
-}
-}
-
-shuffleCards(cards); 
-
-// checking functions
-
-function getPlayType(playerCards, numCards) {
-    // this function checks for valid combinations of cards 
-    if (numCards == 1) {
-      // any single card is valid 
-      return 1; 
-    } else if (numCards == 2) {
-      // check if pair (aka number value is the same)
-      if (playerCards[0].number == playerCards[1].number) {
-        return 2;  
-      } else {
-        return -1; 
-      }
-    } else if (numCards == 3) {
-      // check if triple 
-      if (playerCards[0].number == playerCards[1].number && 
-        playerCards[1].number == playerCards[2].number) {
-          return 3; 
-      } else {
-        return -1; 
-      }
-    } else if (numCards == 5) {
-      //sort the cards by ascending value
-      playerCards.sort((a, b) => (a.value - b.value));
-  
-      //check for straight
-      if (playerCards[0].number == playerCards[1].number - 1) {
-        if (playerCards[1].number == playerCards[2].number - 1) {
-          if (playerCards[2].number == playerCards[3].number - 1) {
-            if (playerCards[3].number == playerCards[4].number - 1) {
-
-              // check for straight flush
-              if (playerCards[0].suit == playerCards[0].suit) {
-                if (playerCards[1].suit == playerCards[2].suit) {
-                  if (playerCards[2].suit == playerCards[3].suit) {
-                    if (playerCards[3].suit == playerCards[4].suit) {
-                      return 55; 
-                    }
-                  }
-                }
-              }
-
-              return 51; 
-            }
-          }
-        }
-      }
-  
-      //check for flush
-      if (playerCards[0].suit == playerCards[0].suit) {
-        if (playerCards[1].suit == playerCards[2].suit) {
-          if (playerCards[2].suit == playerCards[3].suit) {
-            if (playerCards[3].suit == playerCards[4].suit) {
-              return 52; 
-            }
-          }
-        }
-      }
-  
-      //check for full house (High triple)
-      if (playerCards[0].number == playerCards[1].number) {
-        if (playerCards[2].number == playerCards[3].number) {
-          if (playerCards[3].number == playerCards[4].number) {
-            return 53;  
-          }
-        }
-      }
-  
-      //check for full house (High pair)
-      if (playerCards[0].number == playerCards[1].number) {
-        if (playerCards[1].number == playerCards[2].number) {
-          if (playerCards[3].number == playerCards[4].number) {
-            return 53;
-          }
-        }
-      }
-  
-      //check for four-of-a-kind (Low Single)
-      if (playerCards[1].number == playerCards[2].number) {
-        if (playerCards[2].number == playerCards[3].number) {
-          if (playerCards[3].number == playerCards[4].number) {
-            return 54; 
-          }
-        }
-      }
-  
-      //check for four-of-a-kind (High Single)
-      if (playerCards[0].number == playerCards[1].number) {
-        if (playerCards[1].number == playerCards[2].number) {
-          if (playerCards[2].number == playerCards[3].number) {
-            return 54;
-          }
-        }
-      } 
-      
-    } else {
-      return -1; 
-    }
-    
-    return -1; 
-
-}
-
-function higherThanDeck(playerCards, deckCards, numCards) {
-  //sort by value (ascending)
-  playerCards.sort((a, b) => (a.value - b.value)); 
-  deckCards.sort((a, b) => (a.value - b.value)); 
-
-  if (numCards == 1) {
-    if (playerCards[0].value > deckCards[0].value) {
-      return true; 
-    } else {
-      return false;
-    }
-  }
-
-  if (numCards == 2) {
-    if (playerCards[1].value > deckCards[1].value) {
-      return true;
-    } else {
-      return false; 
-    }
-  }
-
-  if (numCards == 3) {
-    if (playerCards[2].value > deckCards[2].value) {
-      return true; 
-    } else {
-      return false; 
-    }
-  }
-
-  if (numCards == 5) {
-    let playType1 = getPlayType(playerCards, numCards); 
-    let playType2 = getPlayType(deckCards, numCards); 
-
-    if (playType1 > playType2) {
-      return true; 
-    } else if (playType1 < playType2) {
-      return false;
-    } else {
-      if (playType1 == 51) {
-        //both are straights
-        if (playerCards[4].value > deckCards[4].value) {
-          return true; 
-        } else {
-          return false;
-        }
-      } else if (playType1 == 52) {
-        //both are flushes
-        if (playerCards[4].number > deckCards[4].number) {
-          return true;
-        } else if (playerCards[4].number == deckCards[4].number) {
-          if (playerCards[3].number > deckCards[3].number) {
-            return true;
-          } else if (playerCards[3].number == deckCards[3].number) {
-            if (playerCards[2].number > deckCards[2].number) {
-              return true;
-            } else if (playerCards[2].number == deckCards[2].number) {
-              if (playerCards[1].number > deckCards[1].number) {
-                return true;
-              } else if (playerCards[1].number == deckCards[1].number) {
-                if (playerCards[0].number > deckCards[0].number) {
-                  return true; 
-                } else if (playerCards[0].number == deckCards[0].number) {
-                  if (playerCards[4].value > deckCards[0].value) {
-                    return true;
-                  } else {
-                    return false; 
-                  }
-                } else {
-                  return false;
-                }
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          } else {
-            return false;
-          }
-        } else {
-          return false;
-        }
-        
-      } else if (playType1 == 53) {
-        //both are full-houses
-
-        if (playerCards[1].number == playerCards[2].number) {
-          if (deckCards[1].number == deckCards[2].number) {
-            //both full-houses have low triple
-            if (playerCards[2].value > deckCards[2].value) {
-              return true; 
-            } else {
-              return false;
-            }
-          } else {
-            //player has low triple, deck has high triple
-            if (playerCards[2].value > deckCards[4].value) {
-              return true; 
-            } else {
-              return false;
-            }
-          }
-        } else {
-          if (deckCards[1].number == deckCards[2].number) {
-            //player has high triple, deck has low triple
-            if (playerCards[4].value > deckCards[2].value) {
-              return true; 
-            } else {
-              return false;
-            }
-          } else {
-            //both full-houses have high triple  
-            if (playerCards[4].value > deckCards[4].value) {
-              return true; 
-            } else {
-              return false;
-            }
-          }
-        }
-      } else if (playType1 == 54) {
-        //both are 4-of-a-kinds
-
-        if (playerCards[2].number > deckCards[2].number) {
-          return true; 
-        } else {
-          return false; 
-        }
-
-      } else if (playType1 == 55) {
-        //both are straight flushes
-
-        if (playerCards[4].value > deckCards[4].value) {
-          return true;
-        } else {
-          return false; 
-        }
-      }
-    }
-  }
-}
-
-let playerCount = 0;
-//let playerMap = new Map();  
-let activePlayers = 0;
-let amountOfPasses = 0; 
-let numberCards = [13, 13, 13, 13]; 
-let usernames = ["", "", "", ""]; 
-
-// on connection 
+let totalPlayers = 0;
 
 io.on('connection', (socket) => {
+    
+    socket.on("addNewPlayer", (username) => {
+        totalPlayers += 1;
 
-    socket.on('disconnection', (num) => {
-      console.log(`${num} disconnected.`);
-    }); 
+        let currentGame = games[games.length - 1]; 
 
-    activePlayers += 1;
+        let newPlayer = new Player(username);
+        currentGame.addPlayer(newPlayer); 
+        socket.join(currentGame.gameRoom); 
+        socket.emit("addPlayerInformation", newPlayer.gameNumber, newPlayer.playerNumber)
+        io.to(currentGame.gameRoom).emit("addToPlayersJoined", newPlayer.playerNumber)
 
-    if (activePlayers > 4) {
-      activePlayers = 1; 
+        // room is full?
+        // send ready alert and add new game for next set of players
+        if (currentGame.readyToStart == true) {
+            //testing purposes:
+
+            console.log(`
+                1 ${currentGame.player1.username},
+                2 ${currentGame.player2.username},
+                3 ${currentGame.player3.username},
+                4 ${currentGame.player4.username}`)
+            
+            // end of test segment
+            
+            console.log(`${currentGame.gameRoom} is ready to start`);
+            io.to(currentGame.gameRoom).emit("readyToStart");
+
+            let newGameRoom = "room" + (games.length + 1); 
+            let newGame = new Game(newGameRoom, games.length + 1);
+            games.push(newGame);
+        }
+    })
+
+    function updateBoard(gameNum, moveType) {
+        let currentGame = games[gameNum - 1];
+        let requestedGameRoom = currentGame.gameRoom;
+        let playerTurn = currentGame.currentPlayerTurn; 
+        let currentDeckCards = currentGame.cardsInDeck;
+        let players = currentGame.players;
+
+        if (moveType == "pass") {
+            io.to(requestedGameRoom).emit("updateDeck", currentDeckCards);
+            io.to(requestedGameRoom).emit("updateGameBoard", players, playerTurn);
+        } else {
+            io.to(requestedGameRoom).emit("updateGameBoard", players, playerTurn);
+            io.to(requestedGameRoom).emit("updateDeck", currentDeckCards);
+            io.to(requestedGameRoom).emit("updatePlayerUsed");
+            if (currentGame.gameOver) {
+                let winner = currentGame.winner.username; 
+                setTimeout(() => {
+                    io.to(requestedGameRoom).emit("gameOver", winner); 
+                }, 1000); 
+            }
+        }
     }
 
-    socket.emit("updatePlayerNumber", activePlayers); 
-
-    socket.on("confirmUpdatedPlayerNumber", (num) => {
-      console.log(`${num} connected.`);
-
-      let start_index = (num - 1) * 13;
-      let end_index = start_index + 13;
-
-      socket.emit('deal_cards', cards.slice(start_index, end_index)); 
-      io.emit('addConnectedPlayers', num); 
+    socket.on("gameCanStart", (gameNum) => {
+        let currentGame = games[gameNum - 1];
+        let requestedGameRoom = currentGame.gameRoom; 
+        io.to(requestedGameRoom).emit("startGame");
     })
 
-    socket.on("getNewPlayerNumber", (num) => {
-      let newNum = num + 1; 
-
-      if (newNum > 4) {
-        newNum = 1; 
-      }
-  
-      socket.emit("updatePlayerNumber", newNum); 
-
-    })
-
-    socket.on('deckChange', (playedCards, player) => {
-      let newPlayer = 1; 
-
-      if (player < 4) {
-        newPlayer = player + 1; 
-      }
-      io.emit('nextPlayer', playedCards, newPlayer);
+    socket.on("getCards", (gameNum, playerNum) => {
+        let currentGame = games[gameNum - 1];
+        let requestedCards = currentGame.players[playerNum - 1].playerCards;
+        socket.emit("receiveCards", requestedCards);
     });
 
-    socket.on('startOfRound', (newAmount) => {
-      console.log(`new start: ${newAmount}`); 
-      io.emit('setCardAmount', newAmount);
-    }); 
-
-    socket.on('increasePasses', () => {
-      if (amountOfPasses < 2) {
-        console.log(`increasing server passes? -> ${amountOfPasses}`)
-        amountOfPasses += 1; 
-        io.emit('updatePass'); 
-      } else if (amountOfPasses == 2) {
-        amountOfPasses = 0; 
-        io.emit('newRound');
-      }
-    }); 
-
-    socket.on('resetPasses', () => {
-      amountOfPasses = 0; 
-      io.emit('setPassToZero'); 
-    })
-
-    socket.on('updateUser', (username, playerNumber) => {
-      playerCount += 1;
-      usernames[playerNumber - 1] = username; 
-
-      console.log(`Player ${playerNumber}: ${username}`); 
-      socket.emit('angrilyConfirmNumber', playerNumber);
-
-      setTimeout(() => {
-        console.log("break")
-      }, 1000) 
-
-      if (playerCount == 4) {
-        console.log("READY TO START")
-        
-        io.emit('updateUsers', usernames); 
-        //io.emit('gameReady'); 
-      }
+    socket.on("getDeck", (gameNum) => {
+        let currentGame = games[gameNum - 1];
+        socket.emit("updateDeck", currentGame.players, currentGame.currentPlayerTurn);
     });
 
-    socket.on('ready', () => {
-      console.log('ready')
-      io.emit('gameReady');
-    })
+    socket.on("getGameBoard", (gameNum) => {
+        let currentGame = games[gameNum - 1];
+        socket.emit("updateGameBoard",currentGame.players, currentGame.currentPlayerTurn);
+    });
 
-    socket.on("checkValidMove", (playerNum, heldCards, playerCards, deckCards, numCards) => {
-      console.log(`VALID ThIS? = ${playerNum}, ${heldCards}, ${playerCards}, ${deckCards}, ${numCards}`); 
-      
-      let playType = getPlayType(playerCards, numCards); 
+    socket.on("attemptToPass", (gameNum, playerNum) => {
+        let currentGame = games[gameNum - 1];
+        let roundAmount = currentGame.roundAmountOfCards;
+        let playerTurn = currentGame.currentPlayerTurn; 
 
-      console.log(`meow ${deckCards.length}`);
-
-      if (playType == -1) {
-        socket.emit('invalidMove'); 
-      } else {
-        if (deckCards.length == 0) {
-
-          let newPlayer = 1; 
-
-          if (playerNum < 4) {
-            newPlayer = playerNum + 1; 
-          }
-
-          //does this work? //yes it does
-          numberCards[playerNum - 1] -= numCards; 
-          for (let i = 0; i < 4; i++) {
-            console.log(`num cards ${i} ->  ${numberCards[i]}`); 
-          }
-          if (numberCards[playerNum - 1] <= 0) {
-            io.emit("show_results", playerNum);
-          }
-
-          io.emit('updateBetterAmounts', numberCards); 
-          //io.emit('updatePlayerAmounts', playerNum, numCards); 
-          //
-
-          console.log("BEFORE_CONFIRMATION");
-          socket.emit('confirmMove', heldCards, numCards); 
-
-          io.emit('nextPlayer', playerCards, newPlayer);
-
-          amountOfPasses = 0; 
-          io.emit('setPassToZero'); 
-
-        } else if (higherThanDeck(playerCards, deckCards, numCards)) {
-          //duplicate code :(
-
-          let newPlayer = 1; 
-
-          if (playerNum < 4) {
-            newPlayer = playerNum + 1; 
-          }
-
-          //does this work? 
-          numberCards[playerNum - 1] -= numCards; 
-          for (let i = 0; i < 4; i++) {
-            console.log(`num cards ${i} ->  ${numberCards[i]}`); 
-          }
-          if (numberCards[playerNum - 1] <= 0) {
-            io.emit("show_results", playerNum);
-          }
-
-          io.emit('updateBetterAmounts', numberCards); 
-          //io.emit('updatePlayerAmounts', playerNum, numCards); 
-          //
-
-          console.log("BEFORE_CONFIRMATION");
-          socket.emit('confirmMove', heldCards, numCards); 
-
-          io.emit('nextPlayer', playerCards, newPlayer);
-
-          amountOfPasses = 0; 
-          io.emit('setPassToZero'); 
-
+        if (playerNum == playerTurn) {
+            if (roundAmount == 0) {
+                socket.emit("invalidPassOnStart");
+            } else {
+                currentGame.pass(); 
+                updateBoard(gameNum, "pass");
+            }
         } else {
-          socket.emit('tooLow');
+            socket.emit("notYourTurn"); 
         }
-      } 
-    });
+    }); 
 
+    socket.on("attemptToPlay", (gameNum, playerNum, heldCards) => {
+        let currentGame = games[gameNum - 1];
+        let playerTurn = currentGame.currentPlayerTurn; 
+        let playerCards = currentGame.players[playerNum - 1].playerCards;
+        let roundAmount = currentGame.roundAmountOfCards;
+        let currentDeckCards = currentGame.cardsInDeck;
+
+        if (playerNum == playerTurn) {
+            let attemptingToPlay = []; 
+            for (let i = 0; i < 13; i++) {
+                if (heldCards[i] == true) {
+                    attemptingToPlay.push(playerCards[i]);
+                }
+            }
+
+            let numberOfCards = attemptingToPlay.length;
+
+            let playType = getPlayType(attemptingToPlay, numberOfCards);
+            if (playType == -10) {
+                socket.emit("invalidAmount");
+            } else if (playType == -1) {
+                socket.emit("invalidCombination");
+            } else {
+                roundAmount = currentGame.roundAmountOfCards;
+                if (roundAmount == 0) {
+                    currentGame.playCards(playerNum, attemptingToPlay, numberOfCards); 
+                    updateBoard(gameNum, "play");
+                } else {
+                    if (numberOfCards == roundAmount) {
+                        if (higherThanDeck(attemptingToPlay, currentDeckCards, numberOfCards)) {
+                            currentGame.playCards(playerNum, attemptingToPlay, numberOfCards); 
+                            updateBoard(gameNum, "play");
+                        } else {
+                            socket.emit("notHigherThanDeck")
+                        }
+                    } else {
+                        socket.emit("wrongAmount"); 
+                    }
+                }
+            }
+        } else {
+            socket.emit("notYourTurn")
+        }
+    })
 });

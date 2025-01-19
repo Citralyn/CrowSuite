@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './Pages.css'
+import '../css/Pages.css'
 
 export default function LoginPage({playerSocket, changePageFunction}) { 
   const [username, setUsername] = useState(""); 

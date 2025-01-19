@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import './Pages.css'
+import '../css/Pages.css'
 
 export default function WaitingRoomPage({playerSocket, gameNumber}) { 
   const [numberOfPlayersJoined, setNumberOfPlayersJoined] = useState(0); 

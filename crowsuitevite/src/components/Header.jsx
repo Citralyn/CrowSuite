@@ -1,4 +1,4 @@
-import './Components.css'
+import '../css/Components.css'
 import crowLogo from '../assets/crow.svg'
 
 export default function Header() {

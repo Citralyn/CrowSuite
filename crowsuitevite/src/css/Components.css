@@ -18,9 +18,6 @@
     text-align: center;
 }
 
-.playerCard {
-    width: 5vw;
-}
 .playerCards {
     justify-content: center;
     display: flex;
@@ -52,3 +49,23 @@
     width: 5vw;
 }
 
+.playerCard img {
+    width: 5vw; 
+}
+
+.playerCard {
+    width: 5vw;
+    margin: 0.5vw;
+    padding: 0.5vw;
+    border-radius: 5%;
+    background-color: lightblue;
+}
+
+.playerCard h1 {
+    color: black;
+    font-size: 0.5vw;
+}
+
+.playerCard:hover {
+    background-color: turquoise;
+}

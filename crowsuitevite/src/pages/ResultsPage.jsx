@@ -1,3 +1,5 @@
+import '../css/Pages.css'
+
 export default function ResultsPage({winner}) { 
   return (
     <div>
