@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Card from './Card.jsx'
+import DeckCard from './DeckCard.jsx';
 import './Components.css'
 
 export default function DeckCards({playerSocket, gameNumber}) {
@@ -15,9 +16,8 @@ export default function DeckCards({playerSocket, gameNumber}) {
 
     return (
         <div className="deckCards">
-            <h1>s{deck.length}</h1>
             {Array.from({ length: deck.length }, (_, i) => (
-                <h1>{deck[i].number} of {deck[i].suit}s</h1>
+                <DeckCard deck={deck} index={i}></DeckCard>
             ))}
         </div>
     )

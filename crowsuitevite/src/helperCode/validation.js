@@ -96,7 +96,7 @@ function getPlayType(playerCards, numCards) {
       return -10; 
     }
     
-    return -10; 
+    return -1; 
 
 }
 

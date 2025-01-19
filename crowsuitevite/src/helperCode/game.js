@@ -85,7 +85,7 @@ class Game {
 
         if (this.players[playerNumber - 1].numberOfCards == 0) {
             this.gameOver = true;
-            this.winner = players[playerNumber - 1]; 
+            this.winner = this.players[playerNumber - 1]; 
             console.log(`GAME OVER -> ${this.gameOver}`);
         }
     }

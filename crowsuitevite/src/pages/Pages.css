@@ -61,33 +61,33 @@
 
 .staticGameContent {  
     display: grid;
-    grid-template-columns: 1fr 100px 100px 100px 100px 100px 100px 100px 1fr; /* Fixed width for the first column, flexible columns for the others */
-    grid-template-rows: 100px 100px 100px 100px 100px; /* First row is 100px, second row is 200px */
+    grid-template-columns: 1fr 100px 100px 100px 100px 100px 100px 100px 1fr; 
+    grid-template-rows: 100px 100px 100px 100px 100px; 
     gap: 2%;
   }
   
   .Deck { 
     background-color: red;
-    grid-column: 3 / 8; /* Start at column 1, end at column 2 */
-    grid-row: 2 / 5; /* Place in row 1 */
+    grid-column: 3 / 8; 
+    grid-row: 2 / 5;
     }
   
   .TopPlayer { 
     background-color: blue;
-    grid-column: 5; /* Start at column 2, end at column 3 */
-    grid-row: 1; /* Place in row 1 */
+    grid-column: 5; 
+    grid-row: 1; 
     }
   
   .LeftPlayer { 
     background-color: green;
-    grid-column: 2; /* Span columns 1 and 2 */
-    grid-row: 3; /* Place in row 2 */
+    grid-column: 2; 
+    grid-row: 3; 
     }
   
   .RightPlayer { 
     background-color: yellow;
-    grid-column: 8; /* Span columns 1 and 2 */
-    grid-row: 3; /* Place in row 2 */
+    grid-column: 8; 
+    grid-row: 3; 
     }
 
 .opponent {

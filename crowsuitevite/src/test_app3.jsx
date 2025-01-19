@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-//import { useContext, createContext } from 'react';
 import { socket } from './socket.js';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import FrontPage from './pages/FrontPage.jsx'
@@ -11,9 +10,10 @@ import WaitingRoomPage from './pages/WaitingRoomPage.jsx'
 
 function App3() {
     const [gamePage, setGamePage] = useState(0);
+    const [gameWinner, setGameWinner] = useState("temp");
     const [gNum, setGNum] = useState(0); 
     const [pNum, setPNum] = useState(0);
-    //const SocketContext = createContext();
+    
   
     useEffect(() => {
         socket.on('connect', () => {
@@ -67,6 +67,8 @@ function App3() {
     
         socket.on("gameOver", (winner) => {
             alert(`gameOver, ${winner} won!`); 
+            setGameWinner(winner); 
+            setGamePage(4); 
         });
 
         return () => {
@@ -123,7 +125,7 @@ function App3() {
             <>
                 <ProgressBar now={gamePage * 10}></ProgressBar>
                 <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
-                <ResultsPage></ResultsPage>
+                <ResultsPage winner={gameWinner}></ResultsPage>
             </>
         )
     } else if (gamePage == 5) {

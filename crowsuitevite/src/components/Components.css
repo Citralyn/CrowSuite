@@ -17,3 +17,38 @@
 .footer {
     text-align: center;
 }
+
+.playerCard {
+    width: 5vw;
+}
+.playerCards {
+    justify-content: center;
+    display: flex;
+}
+
+.heldCards {
+    justify-content: center;
+    display: flex;
+}
+
+.deckCard {
+    width: 4vw;
+    background-color: lightblue;
+}
+
+.deckCards {
+    justify-content: center;
+    display: flex;
+    gap: 1vw;
+}
+
+.playOrPass {
+    display: flex;
+    justify-content: center;
+    gap: 10%;
+}
+
+.playOrPass > button {
+    width: 5vw;
+}
+
