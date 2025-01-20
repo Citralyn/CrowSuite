@@ -53,8 +53,7 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
   
   return (
   <>
-    <h1>GAME PAGE</h1>
-    <h1>{currentPlayer}</h1>
+    <h1>Current Player's Turn: {currentPlayer}</h1>
     <div className="generalFlexContainer">
       <div className="staticGameContent">
         <div className="Deck">
@@ -85,11 +84,12 @@ export default function GamePage({playerSocket, gameNumber, playerNumber}) {
     </div>
     
     <div className="personalizedGameContent">
+    <hr></hr>
       <div className="playerStats">
-        <hr></hr>
-        <h1>Player: {bottomPlayer.username}          Amount of Cards: {bottomPlayer.numberOfCards}</h1>
-        <hr></hr>
+        <h1>Player: {bottomPlayer.username}</h1>
+        <h1>Amount of Cards: {bottomPlayer.numberOfCards}</h1>
       </div>
+      <hr></hr>
       <PlayerCards playerSocket={playerSocket} gameNumber={gameNumber} playerNumber={playerNumber}></PlayerCards>
     </div>
   </>

@@ -16,7 +16,9 @@ export default function DeckCards({playerSocket, gameNumber}) {
     return (
         <div className="deckCards">
             {Array.from({ length: deck.length }, (_, i) => (
+                <>
                 <DeckCard deck={deck} index={i}></DeckCard>
+                </>
             ))}
         </div>
     )

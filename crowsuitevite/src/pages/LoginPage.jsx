@@ -11,17 +11,19 @@ export default function LoginPage({playerSocket, changePageFunction}) {
 
   return (
     <>
-      <h1>LOGIN PAGE</h1>
 
-      <div className="loginPage">
-        <label>
-          <p>Username</p>
-          <input id="username" type="text" placeholder="John Smith" onChange={e => setUsername(e.target.value)}/>
-        </label>
-        <div>
-          <button type="submit" onClick={() => {update(username)}}>Enter</button>
+      <div className="generalFlexContainer">
+        <div className="loginPage">
+          <label>
+            <p>Username</p>
+            <input id="username" type="text" placeholder="John Smith" onChange={e => setUsername(e.target.value)}/>
+          </label>
+          <div>
+            <button type="submit" onClick={() => {update(username)}}>Enter</button>
+          </div>
         </div>
       </div>
+      
     </>
   );
 }; 

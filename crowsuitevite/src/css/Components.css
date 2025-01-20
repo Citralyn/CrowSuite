@@ -19,13 +19,16 @@
 }
 
 .playerCards {
+    align-items: center;
     justify-content: center;
     display: flex;
+    background-color: grey;
 }
 
 .heldCards {
     justify-content: center;
     display: flex;
+    background-color: darkgreen;
 }
 
 .deckCard {
@@ -54,18 +57,71 @@
 }
 
 .playerCard {
-    width: 5vw;
+    width: 6vw; 
+    height: 8vw;
     margin: 0.5vw;
     padding: 0.5vw;
     border-radius: 5%;
-    background-color: lightblue;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.cardNumber > p {
+    color:white; 
+}
+
+.cardIdentifier > .cardNumber {
+    margin-left: 4.1vw;
 }
 
 .playerCard h1 {
+    font-size: 3vh;
     color: black;
-    font-size: 0.5vw;
+}
+
+.playerCard > .cardIdentifier {
+    display: flex;
+    justify-content: center;
+    gap: -3vw;
+    height: 2vh;
+}
+
+.cardIdentifier > .cardSuit {
+    margin-top: -0.9vh;
+    margin-right: 0.9vw;
+}
+
+.centralImage {
+    margin-top: -0.9vh;
 }
 
 .playerCard:hover {
-    background-color: turquoise;
+    background-color: gold;
 }
+/*
+.playingCardx {
+    background-color: red;
+    display: grid;
+    grid-template-rows: 50px 50px 50px 50px 50px 50px 50px; 
+    grid-template-columns: 50px 150px 50px; 
+     grid-template-areas:
+        "cardNumber . ."
+        "cardSuit . ."
+        ". centralImage ."
+        ". centralImage ."
+        ". centralImage ."
+         ". . cardSuit2"
+         ". . cardNumber2"; 
+}
+
+.playingCardx > .centralImage {
+    background-color: white;
+    grid-column: 2;
+    grid-row: 3;
+    grid-row: 4;
+
+}
+*/
+

@@ -1,1 +1,21 @@
 /* for direct styling index.html */
+
+.cheatButton {
+    display: flex;
+    justify-content: right;
+}
+
+.cheatButton button {
+    width: 3vw;
+}
+
+.playAgain {
+    
+    display: flex;
+    justify-content: center;
+}
+
+.playAgain button {
+    margin-bottom: 5vh;
+    width: 10vw;
+}

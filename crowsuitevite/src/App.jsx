@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import ResultsPage from './pages/ResultsPage.jsx'
 import TutorialPage from './pages/TutorialPage.jsx'
 import WaitingRoomPage from './pages/WaitingRoomPage.jsx'
+import './css/Main.css'
 
 function App() {
     const [gamePage, setGamePage] = useState(0);
@@ -90,50 +91,65 @@ function App() {
     if (gamePage == 0) {
         return(
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <FrontPage changePageFunction={changeGamePage}></FrontPage>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(gamePage + 1)}}>NEXT</button>
+                </div>
             </>
         )
     } else if (gamePage == 1) {
         return(
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <LoginPage playerSocket={socket} changePageFunction={changeGamePage}></LoginPage>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(gamePage + 1)}}>NEXT</button>
+                </div>
             </>
         )
     } else if (gamePage == 2) {
         return(
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <WaitingRoomPage playerSocket={socket} gameNumber={gNum}></WaitingRoomPage>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(gamePage + 1)}}>NEXT</button>
+                </div>
             </>
         )
     } else if (gamePage == 3) {
         return(
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(gamePage + 1)}}>{gNum} game, button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <GamePage playerSocket={socket} gameNumber={gNum} playerNumber={pNum}></GamePage>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(gamePage + 1)}}>NEXT</button>
+                </div>
             </>
         )
     } else if (gamePage == 4) {
         return(
             
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(gamePage + 1)}}>button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <ResultsPage winner={gameWinner}></ResultsPage>
+                <div className="playAgain">
+                    <button onClick={() =>{changeGamePage(0)}}>Play Again?</button>
+                </div>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(gamePage + 1)}}>NEXT</button>
+                </div>
             </>
         )
     } else if (gamePage == 5) {
         return(
             <>
-                <ProgressBar now={gamePage * 10}></ProgressBar>
-                <button onClick={() => {changeGamePage(0)}}>button for {pNum}</button>
+                <ProgressBar now={gamePage * 20}></ProgressBar>
                 <TutorialPage></TutorialPage>
+                <div className="cheatButton">
+                    <button onClick={() =>{changeGamePage(0)}}>NEXT</button>
+                </div>
             </>
         )
     } 

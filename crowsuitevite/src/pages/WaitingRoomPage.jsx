@@ -29,10 +29,13 @@ export default function WaitingRoomPage({playerSocket, gameNumber}) {
     )
   } else {
     return(
-      <div className="waitingMessage">
-        <h1>{numberOfPlayersJoined}/4 Players Joined</h1>
-        <button className="btn btn-primary" disabled>START</button>
+      <div className="generalFlexContainer">
+        <div className="waitingMessage">
+          <h1>{numberOfPlayersJoined}/4 Players Joined</h1>
+          <button className="btn btn-primary" disabled>START</button>
+        </div>
       </div>
+      
     )
   }
 }; 

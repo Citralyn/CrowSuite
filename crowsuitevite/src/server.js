@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
 
     socket.on("getDeck", (gameNum) => {
         let currentGame = games[gameNum - 1];
-        socket.emit("updateDeck", currentGame.players, currentGame.currentPlayerTurn);
+        socket.emit("updateDeck", currentGame.cardsInDeck);
     });
 
     socket.on("getGameBoard", (gameNum) => {
