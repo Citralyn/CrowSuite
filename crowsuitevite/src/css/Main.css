@@ -5,8 +5,10 @@
     justify-content: right;
 }
 
+
 .cheatButton button {
-    width: 3vw;
+    width: 5vw;
+    margin: 2vw;
 }
 
 .playAgain {

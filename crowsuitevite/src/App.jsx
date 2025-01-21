@@ -15,7 +15,6 @@ function App() {
     const [gNum, setGNum] = useState(0); 
     const [pNum, setPNum] = useState(0);
     
-  
     useEffect(() => {
         socket.on('connect', () => {
             console.log(socket.id)
@@ -39,6 +38,11 @@ function App() {
         socket.on('startGame', () => {
             setGamePage(3); 
         })
+
+        socket.on('goHome', () => {
+            setGamePage(0);
+        })
+
     }, []);
 
     useEffect(() => {
@@ -91,6 +95,10 @@ function App() {
     if (gamePage == 0) {
         return(
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <FrontPage changePageFunction={changeGamePage}></FrontPage>
                 <div className="cheatButton">
@@ -101,6 +109,10 @@ function App() {
     } else if (gamePage == 1) {
         return(
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <LoginPage playerSocket={socket} changePageFunction={changeGamePage}></LoginPage>
                 <div className="cheatButton">
@@ -111,6 +123,10 @@ function App() {
     } else if (gamePage == 2) {
         return(
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <WaitingRoomPage playerSocket={socket} gameNumber={gNum}></WaitingRoomPage>
                 <div className="cheatButton">
@@ -121,6 +137,10 @@ function App() {
     } else if (gamePage == 3) {
         return(
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <GamePage playerSocket={socket} gameNumber={gNum} playerNumber={pNum}></GamePage>
                 <div className="cheatButton">
@@ -132,6 +152,10 @@ function App() {
         return(
             
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <ResultsPage winner={gameWinner}></ResultsPage>
                 <div className="playAgain">
@@ -145,6 +169,10 @@ function App() {
     } else if (gamePage == 5) {
         return(
             <>
+                <div className="homeButton">
+                    <h1>CrowSuite</h1>
+                    <button onClick={() =>{changeGamePage(0)}}>⾕</button>
+                </div>
                 <ProgressBar now={gamePage * 20}></ProgressBar>
                 <TutorialPage></TutorialPage>
                 <div className="cheatButton">

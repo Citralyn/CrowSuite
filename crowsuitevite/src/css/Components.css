@@ -10,8 +10,21 @@
 .header > h1 {
     width: 25%;
 }
-.header > img {
-    width: 5%;
+
+.homeButton {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.homeButton h1 {
+    font-family: "Jura"; 
+    font-size: 2vw;
+    width: 12vw;
+}
+.homeButton button {
+    margin: 0.5vw;
+    width: 3vw;
 }
 
 .footer {
@@ -100,28 +113,3 @@
 .playerCard:hover {
     background-color: gold;
 }
-/*
-.playingCardx {
-    background-color: red;
-    display: grid;
-    grid-template-rows: 50px 50px 50px 50px 50px 50px 50px; 
-    grid-template-columns: 50px 150px 50px; 
-     grid-template-areas:
-        "cardNumber . ."
-        "cardSuit . ."
-        ". centralImage ."
-        ". centralImage ."
-        ". centralImage ."
-         ". . cardSuit2"
-         ". . cardNumber2"; 
-}
-
-.playingCardx > .centralImage {
-    background-color: white;
-    grid-column: 2;
-    grid-row: 3;
-    grid-row: 4;
-
-}
-*/
-
