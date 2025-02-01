@@ -11,9 +11,9 @@ export default defineConfig(
   plugins: [react()],
   server: {
     proxy: {
-      '/socket.io': {
+      '/': {
         //change from local host to private ip for testing purposes (SPOT 2)
-        target: 'http://localhost:5174',
+        target: 'https://crowsuite.onrender.com:5174',
         ws: true,
         rewriteWsOrigin: true,
       },
