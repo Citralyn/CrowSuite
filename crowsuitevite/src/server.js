@@ -10,7 +10,7 @@ const server = createServer(app);
 const io = new Server(server, {
     cors: {
       //change from local host to private ip for testing purposes (SPOT 3)
-      origin: 'https://crowsuite.netlify.app/', 
+      origin: 'https://crowsuite.netlify.app:5173', 
       //NOT netifly... that's some scam website :(
       methods: ['GET', 'POST'],
     },
