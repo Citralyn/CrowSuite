@@ -1,20 +1,21 @@
 import express from 'express';
+import cors from 'cors';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 
 // create a server (using node and express)
 
 const app = express();
+
 const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
       //change from local host to private ip for testing purposes (SPOT 3)
-      origin: 'https://crowsuite.netlify.app:5173', 
+      origin: 'https://crowsuite.netlify.app', 
       //NOT netifly... that's some scam website :(
       methods: ['GET', 'POST'],
-    },
-});
+    }});
 
 server.listen(5174, () => {
     console.log('server running on port 5174');
