@@ -13,8 +13,8 @@ export default defineConfig(
     proxy: {
       '/': {
         //change from local host to private ip for testing purposes (SPOT 2)
-        //target: 'https://crowsuite.onrender.com',
-        target: 'http://localhost:5174',
+        target: 'https://crowsuite.onrender.com',
+        //target: 'http://localhost:5174',
         ws: true,
         rewriteWsOrigin: true,
       },

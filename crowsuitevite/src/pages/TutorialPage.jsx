@@ -76,7 +76,7 @@ export default function TutorialPage() {
 
         <p>If two players play the same type of combination - e.g., both play a pair of Kings - the one with the higher-ranked suit wins. So, the pair with the King of Crows wins.</p>
 `       
-        <a href="public/goof.zip" download>click me if u dare</a>
+        <a href="/goof.zip" download>click me if u dare</a>
     </div>
     
   );
