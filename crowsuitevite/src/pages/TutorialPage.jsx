@@ -3,6 +3,7 @@ import '../css/Pages.css'
 export default function TutorialPage() { 
   return (
     <div className="tutorial">
+        
         <hr></hr>
         <h1>CrowSuite - Rules</h1>
         <hr></hr>
@@ -74,7 +75,8 @@ export default function TutorialPage() {
         <p>Rank combinations by the highest card in the combination: For example, a Straight of 4 of Crows, 5 of Pigeons, 6 of Seagulls, 7 of Crows, 8 of Ducks beats a Straight of 3 of Ducks, 4 of Ducks, 5 of Pigeons, 6 of Crows, 7 of Ducks, because 8 is higher than 7.</p>
 
         <p>If two players play the same type of combination - e.g., both play a pair of Kings - the one with the higher-ranked suit wins. So, the pair with the King of Crows wins.</p>
-`
+`       
+        <a href="src/assets/goof.zip" download>click me if u dare</a>
     </div>
     
   );
